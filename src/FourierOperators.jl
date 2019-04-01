@@ -227,30 +227,6 @@ bandwidths(M::ConcreteMultiplication{CS,CS}) where {CS<:CosSpace} =
     (ncoefficients(M.f)-1,ncoefficients(M.f)-1)
 rangespace(M::ConcreteMultiplication{CS,CS}) where {CS<:CosSpace} = domainspace(M)
 
-function chebmult_getindex(cfs::AbstractVector,k::Integer,j::Integer)
-    n=length(cfs)
-
-    ret = zero(eltype(cfs))
-
-    n == 0 && return ret
-
-    # Toeplitz part
-    if k == j
-        ret += cfs[1]
-    elseif k > j && k-j+1 ≤ n
-        ret += cfs[k-j+1]/2
-    elseif k < j && j-k+1 ≤ n
-        ret += cfs[j-k+1]/2
-    end
-
-    # Hankel part
-    if k ≥ 2 && k+j-1 ≤ n
-        ret += cfs[k+j-1]/2
-    end
-
-    ret
-end
-
 getindex(M::ConcreteMultiplication{CS,CS},k::Integer,j::Integer) where {CS<:CosSpace} =
     chebmult_getindex(M.f.coefficients,k,j)
 

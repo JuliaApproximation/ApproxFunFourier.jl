@@ -8,26 +8,28 @@ import AbstractFFTs: Plan, fft, ifft
 import FFTW: plan_r2r!, fftwNumber, REDFT10, REDFT01, REDFT00, RODFT00, R2HC, HC2R,
                 r2r!, r2r,  plan_fft, plan_ifft, plan_ifft!, plan_fft!
 
-import ApproxFunBase: normalize!, flipsign, FiniteRange, MatrixFun, UnsetSpace, VFun, RowVector,
-                    UnivariateSpace, AmbiguousSpace, SumSpace, SubSpace, NoSpace, Space,
+import ApproxFunBase: normalize!, flipsign, FiniteRange, Fun, MatrixFun, UnsetSpace, VFun, RowVector,
+                    UnivariateSpace, AmbiguousSpace, SumSpace, SubSpace, WeightSpace, NoSpace, Space,
+                    HeavisideSpace, PointSpace,
                     IntervalOrSegment, RaggedMatrix, AlmostBandedMatrix,
                     AnyDomain, ZeroSpace, TrivialInterlacer, BlockInterlacer, 
                     AbstractTransformPlan, TransformPlan, ITransformPlan,
                     ConcreteConversion, ConcreteMultiplication, ConcreteDerivative, ConcreteIntegral,
+                    ConcreteVolterra, Volterra, VolterraWrapper,
                     MultiplicationWrapper, ConversionWrapper, DerivativeWrapper, Evaluation,
                     Conversion, Multiplication, Derivative, Integral, bandwidths, 
                     ConcreteEvaluation, ConcreteDefiniteLineIntegral, ConcreteDefiniteIntegral, ConcreteIntegral,
                     DefiniteLineIntegral, DefiniteIntegral, ConcreteDefiniteIntegral, ConcreteDefiniteLineIntegral,
-                    ReverseOrientation, ReverseOrientationWrapper, ReverseWrapper, Reverse, NegateEven, Dirichlet,
+                    ReverseOrientation, ReverseOrientationWrapper, ReverseWrapper, Reverse, NegateEven, Dirichlet, ConcreteDirichlet,
                     TridiagonalOperator, SubOperator, Space, @containsconstants, spacescompatible,
-                    hasfasttransform, canonicalspace, setdomain, prectype, domainscompatible, 
+                    hasfasttransform, canonicalspace, domain, setdomain, prectype, domainscompatible, 
                     plan_transform, plan_itransform, plan_transform!, plan_itransform!, transform, itransform, hasfasttransform, Integral, 
                     domainspace, rangespace, boundary, 
                     union_rule, conversion_rule, maxspace_rule, conversion_type, maxspace, hasconversion, points, 
                     rdirichlet, ldirichlet, lneumann, rneumann, ivp, bvp, 
                     linesum, differentiate, integrate, linebilinearform, bilinearform, 
                     UnsetNumber, coefficienttimes,
-                    Segment, isambiguous, Vec, eps, isperiodic,
+                    Segment, IntervalOrSegmentDomain, PiecewiseSegment, isambiguous, Vec, eps, isperiodic,
                     arclength, complexlength,
                     invfromcanonicalD, fromcanonical, tocanonical, fromcanonicalD, tocanonicalD, canonicaldomain, setcanonicaldomain, mappoint,
                     reverseorientation, checkpoints, evaluate, mul_coefficients, coefficients, isconvertible,
@@ -35,8 +37,9 @@ import ApproxFunBase: normalize!, flipsign, FiniteRange, MatrixFun, UnsetSpace, 
                     toeplitz_getindex, toeplitz_axpy!, ToeplitzOperator, hankel_getindex, 
                     SpaceOperator, ZeroOperator, InterlaceOperator,
                     interlace!, reverseeven!, negateeven!, cfstype, pad!,
-                    extremal_args, hesseneigvals
+                    extremal_args, hesseneigvals, chebyshev_clenshaw, recA, recB, recC, roots, chebmult_getindex, intpow, alternatingsum
 
+                    
 import DomainSets: Domain, indomain, UnionDomain, ProductDomain, FullSpace, Point, elements, DifferenceDomain,
             Interval, ChebyshevInterval, boundary, ∂, rightendpoint, leftendpoint,
             dimension, Domain1d, Domain2d         
@@ -235,58 +238,6 @@ plan_transform(::CosSpace,x::AbstractVector) = plan_chebyshevtransform(x;kind=2)
 plan_itransform(::CosSpace,x::AbstractVector) = plan_ichebyshevtransform(x;kind=2)
 transform(::CosSpace,vals,plan) = plan*vals
 itransform(::CosSpace,cfs,plan) = plan*cfs
-
-function chebyshev_clenshaw(c::AbstractVector, x)
-    N,T = length(c),promote_type(eltype(c),typeof(x))
-    if N == 0
-        return zero(x)
-    elseif N == 1 # avoid issues with NaN x
-        return first(c)*one(x)
-    end
-
-    x = 2x
-    bk1,bk2 = zero(T),zero(T)
-    @inbounds for k = N:-1:2
-        bk2, bk1 = bk1, muladd(x,bk1,c[k]-bk2)
-    end
-
-    muladd(x/2,bk1,c[1]-bk2)
-end
-
-
-function chebyshev_clenshaw(c::AbstractVector,x::Vector,plan::ClenshawPlan{<:Any,V}) where V
-    N,n = length(c),length(x)
-    if isempty(c)
-        return zeros(V,n)
-    end
-
-    bk=plan.bk
-    bk1=plan.bk1
-    bk2=plan.bk2
-
-    @inbounds for i = 1:n
-        x[i] = 2x[i]
-        bk1[i] = zero(V)
-        bk2[i] = zero(V)
-    end
-
-    @inbounds for k = N:-1:2
-        ck = c[k]
-        for i = 1:n
-            bk[i] = muladd(x[i],bk1[i],ck-bk2[i])
-        end
-        bk2, bk1, bk = bk1, bk, bk2
-    end
-
-    ck = c[1]
-    @inbounds for i = 1:n
-        x[i] = x[i]/2
-        bk[i] = muladd(x[i],bk1[i],ck-bk2[i])
-    end
-
-    bk
-end
-
 
 clenshaw(::CosSpace, c::AbstractVector, x) = chebyshev_clenshaw(c, x)
 
@@ -622,5 +573,23 @@ DefiniteLineIntegral(d::PeriodicDomain) = DefiniteLineIntegral(Laurent(d))
 ## Toeplitz
 union_rule(A::Space{<:PeriodicSegment}, B::Space{<:IntervalOrSegment}) =
     union(Space(Interval(domain(A))), B)
+
+
+    ## Derivative
+
+function invfromcanonicalD(S::Laurent{PeriodicLine{false}})
+    d=domain(S)
+    @assert d.center==0  && d.L==1.0
+    a=Fun(Laurent(),[1.,.5,.5])
+end
+
+function invfromcanonicalD(S::LaurentDirichlet{PeriodicLine{false}})
+    d=domain(S)
+    @assert d.center==0  && d.L==1.0
+    a=Fun(Laurent(),[1.,.5,.5])
+end
+
+Space(d::PeriodicCurve{S}) where {S<:Fourier} = Fourier(d)
+Space(d::PeriodicCurve{S}) where {S<:Laurent} = Laurent(d)
 
 end #module

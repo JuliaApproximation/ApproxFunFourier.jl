@@ -3,6 +3,7 @@
 
 abstract type PeriodicDomain{T} <: Domain{T} end
 
+isperiodic(::PeriodicDomain) = true
 
 canonicaldomain(::PeriodicDomain) = PeriodicSegment()
 

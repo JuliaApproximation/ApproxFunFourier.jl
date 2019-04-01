@@ -1,6 +1,6 @@
 using ApproxFunFourier, ApproxFunBase, Test, BlockArrays, BlockBandedMatrices, SpecialFunctions, LinearAlgebra
     import ApproxFunBase: testspace, testtransforms, testmultiplication,
-                      testbandedoperator, testcalculus, Block
+                      testbandedoperator, testcalculus, Block, Vec, testfunctional
     import SpecialFunctions: factorial
 
 @testset "Periodic Domains" begin    
@@ -114,8 +114,6 @@ end
     v = randn(4) .+ im.*randn(4)
     @test P*v == P*real(v) + im*(P*imag(v))
 
-    @test norm(Fun(x->Fun(cos,Fourier(-π .. π),20)(x),20)-Fun(cos,20)) <100eps()
-    @test norm(Fun(x->Fun(cos,Fourier(-π .. π))(x))-Fun(cos)) <100eps()
     @test norm(Fun(cos,Fourier)'+Fun(sin,Fourier)) < 100eps()
 
     f=Fun(x->exp(-10sin((x-.1)/2)^2),Fourier)
@@ -156,8 +154,8 @@ end
     A = Multiplication(mySin,Fourier())
     @test A.op[1,1] == 0
 
-    @test norm(ApproxFun.Reverse(Fourier())*Fun(t->cos(cos(t-0.2)-0.1),Fourier()) - Fun(t->cos(cos(-t-0.2)-0.1),Fourier())) < 10eps()
-    @test norm(ApproxFun.ReverseOrientation(Fourier())*Fun(t->cos(cos(t-0.2)-0.1),Fourier()) - Fun(t->cos(cos(t-0.2)-0.1),Fourier(PeriodicSegment(2π,0)))) < 10eps()
+    @test norm(ApproxFunBase.Reverse(Fourier())*Fun(t->cos(cos(t-0.2)-0.1),Fourier()) - Fun(t->cos(cos(-t-0.2)-0.1),Fourier())) < 10eps()
+    @test norm(ApproxFunBase.ReverseOrientation(Fourier())*Fun(t->cos(cos(t-0.2)-0.1),Fourier()) - Fun(t->cos(cos(t-0.2)-0.1),Fourier(PeriodicSegment(2π,0)))) < 10eps()
 end
 
 @testset "Laurent" begin
@@ -169,7 +167,6 @@ end
     @test Fun(Laurent(-1..1),[1,1.,1.])(0.1) ≈ 1+2cos(π*(0.1+1))
     @test Fun(Laurent(0..1),[1,1.,1.])(0.1) ≈ 1+2cos(2π*0.1)
 
-    @test norm(Fun(x->Fun(cos,Laurent)(x))-Fun(cos)) <100eps()
     @test norm(Fun(cos,Laurent)'+Fun(sin,Laurent)) < 100eps()
 
     B=Evaluation(Laurent(0..2π),0,1)
@@ -367,20 +364,11 @@ end
 end
 
 @testset "Integral equations" begin    
-    @time for S in (Fourier(Circle()),Laurent(Circle()),Taylor(Circle()),
-        CosSpace(Circle()),JacobiWeight(-0.5,-0.5,Chebyshev()),
-        JacobiWeight(-0.5,-0.5,Chebyshev(Segment(1.0,2.0+im))),
-        JacobiWeight(0.5,0.5,Ultraspherical(1,Segment(1.0,2.0+im))))
+    @time for S in (Fourier(Circle()),Laurent(Circle()),Taylor(Circle()),CosSpace(Circle()))
         testfunctional(DefiniteLineIntegral(S))
     end
 
     Σ = DefiniteIntegral()
-
-    f1 = Fun(t->cos(cos(t)),-π..π)
-    f = Fun(t->cos(cos(t)),Laurent(-π..π))
-
-    @test sum(f1) ≈ Σ*f
-
     f1 = Fun(t->cos(cos(t))/t,Laurent(Circle()))
     f2 = Fun(t->cos(cos(t))/t,Fourier(Circle()))
     @test Σ*f1 ≈ Σ*f2

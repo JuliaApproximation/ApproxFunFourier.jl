@@ -11,32 +11,33 @@ import FFTW: plan_r2r!, fftwNumber, REDFT10, REDFT01, REDFT00, RODFT00, R2HC, HC
                 r2r!, r2r,  plan_fft, plan_ifft, plan_ifft!, plan_fft!
 
 import ApproxFunBase: normalize!, flipsign, FiniteRange, MatrixFun, UnsetSpace, VFun, RowVector,
-                    UnivariateSpace, AmbiguousSpace, SumSpace, SubSpace, 
+                    UnivariateSpace, AmbiguousSpace, SumSpace, SubSpace, NoSpace, Space,
                     IntervalOrSegment, RaggedMatrix, AlmostBandedMatrix,
                     AnyDomain, ZeroSpace, TrivialInterlacer, BlockInterlacer, 
                     AbstractTransformPlan, TransformPlan, ITransformPlan,
                     ConcreteConversion, ConcreteMultiplication, ConcreteDerivative, ConcreteIntegral,
-                    MultiplicationWrapper, ConversionWrapper, DerivativeWrapper,
+                    MultiplicationWrapper, ConversionWrapper, DerivativeWrapper, Evaluation,
                     Conversion, Multiplication, Derivative, Integral, bandwidths, 
                     ConcreteEvaluation, ConcreteDefiniteLineIntegral, ConcreteDefiniteIntegral, ConcreteIntegral,
                     DefiniteLineIntegral, DefiniteIntegral, ConcreteDefiniteIntegral, ConcreteDefiniteLineIntegral,
-                    ReverseOrientation, Reverse, Dirichlet,
+                    ReverseOrientation, ReverseOrientationWrapper, ReverseWrapper, Reverse, NegateEven, Dirichlet,
                     TridiagonalOperator, SubOperator, Space, @containsconstants, spacescompatible,
                     hasfasttransform, canonicalspace, setdomain, prectype, domainscompatible, 
-                    plan_transform, plan_itransform, transform, itransform, hasfasttransform, Integral, 
+                    plan_transform, plan_itransform, plan_transform!, plan_itransform!, transform, itransform, hasfasttransform, Integral, 
                     domainspace, rangespace, boundary, 
-                    union_rule, conversion_rule, maxspace_rule, conversion_type, hasconversion, points, 
+                    union_rule, conversion_rule, maxspace_rule, conversion_type, maxspace, hasconversion, points, 
                     rdirichlet, ldirichlet, lneumann, rneumann, ivp, bvp, 
                     linesum, differentiate, integrate, linebilinearform, bilinearform, 
                     UnsetNumber, coefficienttimes,
-                    Segment, isambiguous, Vec, eps, 
+                    Segment, isambiguous, Vec, eps, isperiodic,
                     arclength, complexlength,
                     invfromcanonicalD, fromcanonical, tocanonical, fromcanonicalD, tocanonicalD, canonicaldomain, setcanonicaldomain, mappoint,
-                    reverseorientation, checkpoints, evaluate, mul_coefficients, coefficients,
+                    reverseorientation, checkpoints, evaluate, mul_coefficients, coefficients, isconvertible,
                     clenshaw, ClenshawPlan, sineshaw,
                     toeplitz_getindex, toeplitz_axpy!, ToeplitzOperator, hankel_getindex, 
                     SpaceOperator, ZeroOperator, InterlaceOperator,
-                    interlace!, reverseeven!, negateeven!, cfstype
+                    interlace!, reverseeven!, negateeven!, cfstype, pad!,
+                    extremal_args, hesseneigvals
 
 import DomainSets: Domain, indomain, UnionDomain, ProductDomain, FullSpace, Point, elements, DifferenceDomain,
             Interval, ChebyshevInterval, boundary, ∂, rightendpoint, leftendpoint,
@@ -66,6 +67,7 @@ import FastTransforms: ChebyshevTransformPlan, IChebyshevTransformPlan, plan_che
                         
 export Fourier, Taylor, Hardy, CosSpace, SinSpace, Laurent, PeriodicDomain
 
+include("utils.jl")
 include("Domains/Domains.jl")
 
 for T in (:CosSpace,:SinSpace)
@@ -602,5 +604,25 @@ include("specialfunctions.jl")
 include("FourierOperators.jl")
 include("LaurentOperators.jl")
 include("LaurentDirichlet.jl")
+include("roots.jl")
+
+Fun(::typeof(identity), d::Circle) = Fun(Laurent(d),[d.center,0.,d.radius])
+
+Space(d::PeriodicDomain) = Fourier(d)
+Space(d::Circle) = Laurent(d)
+
+
+## Evaluation
+
+Evaluation(d::PeriodicDomain,x::Number,n...) = Evaluation(Laurent(d),complex(x),n...)
+
+## Definite Integral
+
+DefiniteIntegral(d::PeriodicDomain) = DefiniteIntegral(Laurent(d))
+DefiniteLineIntegral(d::PeriodicDomain) = DefiniteLineIntegral(Laurent(d))
+
+## Toeplitz
+union_rule(A::Space{<:PeriodicSegment}, B::Space{<:IntervalOrSegment}) =
+    union(Space(Interval(domain(A))), B)
 
 end #module

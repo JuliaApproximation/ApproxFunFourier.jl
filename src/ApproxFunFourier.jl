@@ -1,5 +1,3 @@
-__precompile__()
-
 module ApproxFunFourier
 using Base, LinearAlgebra, Reexport, AbstractFFTs, FFTW, InfiniteArrays, FillArrays, FastTransforms, IntervalSets, 
             DomainSets

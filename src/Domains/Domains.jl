@@ -52,6 +52,6 @@ convert(::Type{D},::AnyDomain) where {D<:PeriodicDomain} = AnyPeriodicDomain()
 
 include("PeriodicSegment.jl")
 include("Circle.jl")
-include("Line.jl")
+include("PeriodicLine.jl")
 include("Curve.jl")
 include("Disk.jl")

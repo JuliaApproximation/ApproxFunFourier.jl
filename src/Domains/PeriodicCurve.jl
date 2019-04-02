@@ -1,3 +1,4 @@
+export PeriodicCurve
 
 struct PeriodicCurve{S<:Space,T,VT} <: PeriodicDomain{T}
     curve::Fun{S,T,VT}

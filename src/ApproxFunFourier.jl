@@ -37,7 +37,8 @@ import ApproxFunBase: normalize!, flipsign, FiniteRange, Fun, MatrixFun, UnsetSp
                     toeplitz_getindex, toeplitz_axpy!, ToeplitzOperator, hankel_getindex, 
                     SpaceOperator, ZeroOperator, InterlaceOperator,
                     interlace!, reverseeven!, negateeven!, cfstype, pad!,
-                    extremal_args, hesseneigvals, chebyshev_clenshaw, recA, recB, recC, roots, chebmult_getindex, intpow, alternatingsum
+                    extremal_args, hesseneigvals, chebyshev_clenshaw, recA, recB, recC, roots, chebmult_getindex, intpow, alternatingsum,
+                    affine_setdiff, complexroots
 
                     
 import DomainSets: Domain, indomain, UnionDomain, ProductDomain, FullSpace, Point, elements, DifferenceDomain,

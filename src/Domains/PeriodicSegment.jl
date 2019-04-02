@@ -120,3 +120,6 @@ boundary(d::ProductDomain{Tuple{A,B}}) where {A<:PeriodicSegment,B<:PeriodicSegm
 
 union_rule(A::SumSpace{<:Any,<:PeriodicSegment}, B::Space{<:IntervalOrSegment}) =
     union(Space(Interval(domain(A))), B)
+
+Base.setdiff(d::PeriodicSegment, ptsin::UnionDomain{AS}) where {AS <: AbstractVector{P}} where {P <: Point} = 
+    affine_setdiff(d, ptsin)

@@ -608,4 +608,15 @@ end
 Space(d::PeriodicCurve{S}) where {S<:Fourier} = Fourier(d)
 Space(d::PeriodicCurve{S}) where {S<:Laurent} = Laurent(d)
 
+function Fun(T::ToeplitzOperator)
+    if length(T.nonnegative)==1
+       Fun(Taylor(),[T.nonnegative;T.negative])
+     elseif length(T.negative)==0
+         Fun(Hardy{false}(),T.nonnegative)
+     else
+         Fun(Laurent(Circle()),interlace(T.nonnegative,T.negative))
+     end
+ end
+ 
+
 end #module

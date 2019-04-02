@@ -1,6 +1,6 @@
 using ApproxFunFourier, ApproxFunBase, Test, BlockArrays, BlockBandedMatrices, SpecialFunctions, LinearAlgebra
     import ApproxFunBase: testspace, testtransforms, testmultiplication,
-                      testbandedoperator, testcalculus, Block, Vec, testfunctional
+                      testbandedoperator, testblockbandedoperator, testbandedblockbandedoperator, testcalculus, Block, Vec, testfunctional
     import SpecialFunctions: factorial
 
 @testset "Periodic Domains" begin    
@@ -313,16 +313,6 @@ end
     @test f(cos(0.1),sin(0.1)) ≈ exp(-cos(0.1)-2cos(sin(0.1)))
 end
 
-@testset "Fourier Vector" begin
-    a = [1 2; 3 4]
-    f = Fun(θ->[sin(θ),sin(2θ)],Fourier())
-    @test (a*f)(0.1) ≈ a*f(0.1)
-    @test Fun(a)*f ≈ a*f
-    @test Fun(a*Array(f)) ≈ a*f
-    @test norm(f) ≈ sqrt(2π)
-    @test norm(f,2) ≈ sqrt(2π)
-end
-
 @testset "Operators" begin
     d=PeriodicSegment(0.,2π)
     a=Fun(t-> 1+sin(cos(10t)),d)
@@ -361,6 +351,14 @@ end
     u=L\f
 
     @test norm(L*u-f) < 1000eps()
+
+    @time for M in (Multiplication(Fun(CosSpace(),[1.]),CosSpace()),
+            Multiplication(Fun(CosSpace(),[1.]),SinSpace()),
+            Multiplication(Fun(SinSpace(),[1.]),SinSpace()),
+            Multiplication(Fun(SinSpace(),[1.]),CosSpace()),
+            Derivative(SinSpace()),Derivative(CosSpace()))
+        testbandedoperator(M)
+    end
 end
 
 @testset "Integral equations" begin    
@@ -385,3 +383,193 @@ end
     @test L[1,1] == 0
 end
 
+@testset "Piecewise + Constant" begin
+    Γ=Circle() ∪ Circle(0.0,0.4)
+    o=ones(Γ)
+    @test o(1.) ≈ 1.0
+    @test o(0.4) ≈ 1.0
+
+    @time G=Fun(z->in(z,component(Γ,2)) ? [1 0; -1/z 1] : [z 0; 0 1/z],Γ)
+    @test (G-I)(exp(0.1im)) ≈ (G(exp(0.1im))-I)
+end
+
+@testset "Array" begin
+    @testset "Fourier Vector" begin
+        a = [1 2; 3 4]
+        f = Fun(θ->[sin(θ),sin(2θ)],Fourier())
+        @test (a*f)(0.1) ≈ a*f(0.1)
+        @test Fun(a)*f ≈ a*f
+        @test Fun(a*Array(f)) ≈ a*f
+        @test norm(f) ≈ sqrt(2π)
+        @test norm(f,2) ≈ sqrt(2π)
+    end
+
+    @testset "CosSpace Vector" begin
+        a = [1 2; 3 4]
+        f = Fun(θ->[1,cos(θ)],CosSpace())
+        @test (a*f)(0.1) ≈ [1+2cos(0.1); 3+4cos(0.1)]
+        @test (a*f)(0.1) ≈ a*f(0.1)
+        @test Fun(a)*f ≈ a*f
+        @test Fun(a*Array(f)) ≈ a*f
+    end
+
+    @testset "CosSpace Matrix" begin
+        a = [1 2; 3 4]
+        m = Fun(θ->[1 cos(θ); cos(2θ) cos(cos(θ))],CosSpace())
+        @test (a*m)(0.1) ≈ a*m(0.1)
+        @test (m*a)(0.1) ≈ m(0.1)*a
+        @test Fun(a)*m   ≈ a*m
+        @test Fun(a*Array(m))   ≈ a*m
+
+        @test (a+m)(0.1) ≈ a+m(0.1)
+        @test (m+a)(0.1) ≈ m(0.1)+a
+
+        @test (m+I)(0.1) ≈ m(0.1)+I
+    end
+
+    @testset "SinSpace Vector" begin
+        a = [1 2; 3 4]
+        f = Fun(θ->[sin(θ),sin(2θ)],SinSpace())
+        @test (a*f)(0.1) ≈ a*f(0.1)
+        @test Fun(a)*f ≈ a*f
+        @test Fun(a*Array(f)) ≈ a*f
+
+        @test all(sp -> sp isa SinSpace, space(a*f).spaces)
+    end
+
+    @testset "CosSpace Matrix" begin
+        a = [1 2; 3 4]
+        m = Fun(θ->[sin(3θ) sin(θ); sin(2θ) sin(sin(θ))],SinSpace())
+        @test (a*m)(0.1) ≈ a*m(0.1)
+        @test (m*a)(0.1) ≈ m(0.1)*a
+        @test Fun(a)*m   ≈ a*m
+        @test Fun(a*Array(m))   ≈ a*m
+
+        @test all(sp -> sp isa SinSpace, space(a*m).spaces)
+
+        @test (a+m)(0.1) ≈ a+m(0.1)
+        @test (m+a)(0.1) ≈ m(0.1)+a
+
+        @test (m+I)(0.1) ≈ m(0.1)+I
+    end
+
+        @testset "Two circles" begin
+        Γ = Circle() ∪ Circle(0.5)
+
+        f = Fun(z -> in(z,component(Γ,2)) ? 1 : z,Γ)
+        @test f(exp(0.1im)) ≈ exp(0.1im)
+        @test f(0.5exp(0.1im)) ≈ 1
+
+        G = Fun(z -> in(z,component(Γ,2)) ? [1 -z^(-1); 0 1] :
+                                            [z 0; 0 z^(-1)], Γ);
+
+        @test G(exp(0.1im)) ≈ [exp(0.1im) 0 ; 0 exp(-0.1im)]
+        @test G(0.5exp(0.1im)) ≈ [1 -2exp(-0.1im) ; 0 1]
+
+        G1=Fun(Array(G)[:,1])
+
+        @test G1(exp(0.1im)) ≈ [exp(0.1im),0.]
+        @test G1(0.5exp(0.1im)) ≈ [1,0.]
+
+        M = Multiplication(G, space(G1))
+        testblockbandedoperator(M)
+
+        for z in (0.5exp(0.1im),exp(0.2im))
+            @test G[1,1](z) ≈ G[1](z)
+            @test (M.op.ops[1,1]*G1[1])(z) ≈ M.f[1,1](z)*G1[1](z)
+            @test (M.op.ops[2,1]*G1[1])(z) ≈ M.f[2,1](z)*G1[1](z)
+            @test (M.op.ops[1,2]*G1[2])(z) ≈ M.f[1,2](z)*G1[2](z)
+            @test (M.op.ops[2,2]*G1[2])(z) ≈ M.f[2,2](z)*G1[2](z)
+        end
+
+        u = M*G1
+        @test norm(u(exp(.1im))-[exp(.2im),0])<100eps()
+        @test norm(u(.5exp(.1im))-[1,0])<100eps()
+    end
+
+    @testset "Circle" begin
+        G = Fun(z->[-1 -3; -3 -1]/z +
+                   [ 2  2;  1 -3] +
+                   [ 2 -1;  1  2]*z, Circle())
+
+        @test G[1,1](exp(0.1im)) == G(exp(0.1im))[1,1]
+
+        F̃ = Array((G-I)[:,1])
+        F = (G-I)[:,1]
+
+        @test Fun(F) ≡ F
+
+        @test F(exp(0.1im)) ≈ [-exp(-0.1im)+1+2exp(0.1im);-3exp(-0.1im)+1+1exp(0.1im)]
+        @test Fun(F̃,space(F))(exp(0.1im)) ≈ [-exp(-0.1im)+1+2exp(0.1im);-3exp(-0.1im)+1+1exp(0.1im)]
+
+        @test coefficients(F̃,space(F)) == F.coefficients
+        @test Fun(F̃,space(F)) == F
+
+        @test F == Fun(vec(F),space(F))
+
+        @test inv(G(exp(0.1im))) ≈ inv(G)(exp(0.1im))
+
+        @test Fun(Matrix(I,2,2),space(G))(exp(0.1im)) ≈ Matrix(I,2,2)
+        @test Fun(I,space(G))(exp(0.1im)) ≈ Matrix(I,2,2)
+    end
+end
+
+@testset "Taylor()^2, checks bug in type of plan_transform" begin
+    f = Fun((x,y)->exp((x-0.1)*cos(y-0.2)),Taylor()^2)
+    @test f(0.2,0.3) ≈ exp(0.1*cos(0.1))
+end
+
+@testset "Periodic Poisson" begin
+    d=PeriodicSegment()^2
+    S=Space(d)
+
+    f=Fun((x,y)->exp(-10(sin(x/2)^2+sin(y/2)^2)),d)
+    A=Laplacian(d)+0.1I
+    testbandedblockbandedoperator(A)
+    @time u=A\f
+    @test u(.1,.2) ≈ u(.2,.1)
+    @test (lap(u)+.1u-f)|>coefficients|>norm < 1000000eps()
+end
+
+@testset "Low Rank" begin
+    ## Periodic
+    f=LowRankFun((x,y)->cos(x)*sin(y),PeriodicSegment(),PeriodicSegment())
+    @test f(.1,.2) ≈ cos(.1)*sin(.2)
+
+    f=LowRankFun((x,y)->cos(cos(x)+sin(y)),PeriodicSegment(),PeriodicSegment())
+    @test f(.1,.2) ≈ cos(cos(.1)+sin(.2))
+    @test norm(Float64[cos(cos(x)+sin(y)) for x=ApproxFunBase.vecpoints(f,1),y=ApproxFunBase.vecpoints(f,2)]-values(f))<10000eps()
+
+    f=ProductFun((x,y)->cos(cos(x)+sin(y)),PeriodicSegment()^2)
+    @test f(.1,.2) ≈ cos(cos(.1)+sin(.2))
+    x,y=points(f)
+    @test norm(Float64[cos(cos(x[k,j])+sin(y[k,j])) for k=1:size(f,1),j=1:size(f,2)]-values(f))<10000eps()
+
+    d=PeriodicSegment()^2
+    f=ProductFun((x,y)->exp(-10(sin(x/2)^2+sin(y/2)^2)),d)
+    @test (transpose(f)-f|>coefficients|>norm)< 1000eps()
+end
+
+@testset "off domain evaluate" begin
+    g = Fun(1, PeriodicSegment(Vec(0,-1) , Vec(π,-1)))
+    @test g(0.1,-1) ≈ 1
+    @test g(0.1,1) ≈ 0
+end
+
+
+@testset "PeriodicLine" begin
+    d=PeriodicLine()
+    D=Derivative(d)
+
+    f = Fun(x->sech(x-0.1),d,200)
+    @test f(1.) ≈ sech(1-0.1)
+
+    f=Fun(x->sech(x-0.1),d)
+    @test f(1.) ≈ sech(1-0.1)
+
+    @test ≈((D*f)(.2),-0.0991717226583897;atol=100000eps())
+    @test ≈((D^2*f)(.2),-0.9752522555114987;atol=1000000eps())
+
+    f=Fun(z->2exp(z^2),PeriodicLine(0.,π/2))
+    @test f(1.1im) ≈ 2exp(-1.1^2)
+end

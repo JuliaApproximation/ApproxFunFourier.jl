@@ -24,15 +24,15 @@ const 𝔻 = Disk()
 
 isambiguous(d::Disk) = isnan(d.radius) && all(isnan,d.center)
 
+polar(r,θ) = Vec(r*cos(θ),r*sin(θ))
+ipolar(x,y) = Vec(sqrt(abs2(x)+abs2(y)), atan(y,x))
+polar(rθ::Vec) = polar(rθ...)
+ipolar(xy::Vec) = ipolar(xy...)
 
-#canonical is rectangle [r,0]x[-π,π]
-# we assume radius and centre are zero for now
-fromcanonical(D::Disk{T},x,t) where {T<:Real} =
-    Vec(D.radius*x*cos(t)+D.center[1],D.radius*x*sin(t)+D.center[2])
-tocanonical(D::Disk{T},x,y) where {T<:Real} =
-    Vec(sqrt((x-D.center[1])^2+(y-D.center[2])^2)/D.radius,
-        atan(y-D.center[2],x-D.center[1]))
-checkpoints(d::Disk) = [fromcanonical(d,(.1,.2243));fromcanonical(d,(-.212423,-.3))]
+fromcanonical(D::Disk{T},xy::Vec) where {T<:Vec} = Vec((D.radius.*xy .+ D.center)...)
+tocanonical(D::Disk{T},x,y) where {T<:Vec} = Vec((xy .- D.center)./D.radius)
+
+checkpoints(d::Disk) = [fromcanonical(d,Vec(.1,.2243)),fromcanonical(d,Vec(-.212423,-.3))]
 
 # function points(d::Disk,n,m,k)
 #     ptsx=0.5*(1-gaussjacobi(n,1.,0.)[1])

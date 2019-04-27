@@ -1,5 +1,5 @@
 # ApproxFunFourier.jl
-Support for orthogonal polyFouriernomial-based spaces in ApproxFun
+Support for Fourier-based spaces in ApproxFun
 
 [![](https://img.shields.io/badge/docs-stable-blue.svg)](https://JuliaApproximation.github.io/ApproxFun.jl/stable)
 [![](https://img.shields.io/badge/docs-latest-blue.svg)](https://JuliaApproximation.github.io/ApproxFun.jl/latest)

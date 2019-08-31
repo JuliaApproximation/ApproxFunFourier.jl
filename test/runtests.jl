@@ -1,4 +1,4 @@
-using ApproxFunFourier, ApproxFunBase, Test, BlockArrays, BlockBandedMatrices, SpecialFunctions, LinearAlgebra
+using ApproxFunFourier, ApproxFunBase, Test, SpecialFunctions, LinearAlgebra
     import ApproxFunBase: testspace, testtransforms, testmultiplication,
                       testbandedoperator, testblockbandedoperator, testbandedblockbandedoperator, testcalculus, Block, Vec, testfunctional
     import SpecialFunctions: factorial

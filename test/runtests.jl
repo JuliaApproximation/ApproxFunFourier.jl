@@ -1,5 +1,5 @@
 using ApproxFunFourier, ApproxFunBase, Test, SpecialFunctions, LinearAlgebra
-    import ApproxFunBase: testspace, testtransforms, testmultiplication,
+    import ApproxFunBase: testspace, testtransforms, testmultiplication, testraggedbelowoperator,
                       testbandedoperator, testblockbandedoperator, testbandedblockbandedoperator, testcalculus, Block, Vec, testfunctional
     import SpecialFunctions: factorial
 
@@ -453,7 +453,7 @@ end
         @test (m+I)(0.1) ≈ m(0.1)+I
     end
 
-        @testset "Two circles" begin
+    @testset "Two circles" begin
         Γ = Circle() ∪ Circle(0.5)
 
         f = Fun(z -> in(z,component(Γ,2)) ? 1 : z,Γ)
@@ -470,6 +470,12 @@ end
 
         @test G1(exp(0.1im)) ≈ [exp(0.1im),0.]
         @test G1(0.5exp(0.1im)) ≈ [1,0.]
+
+        let f = G[1,1], sp = space(G1)[1,1] # test diagonal eltype bug
+            D =  Diagonal([map(Multiplication,components(f),sp.spaces)...])
+            @test eltype(Matrix(D)) == Operator{ComplexF64}
+            testraggedbelowoperator(Multiplication(f, sp))
+        end
 
         M = Multiplication(G, space(G1))
         testblockbandedoperator(M)

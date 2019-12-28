@@ -1,6 +1,6 @@
 name = "ApproxFunFourier"
 uuid = "59844689-9c9d-51bf-9583-5b794ec66d30"
-version = "0.2"
+version = "0.2.1"
 
 [deps]
 AbstractFFTs = "621f4979-c628-5d54-868e-fcf4e3e8185c"
@@ -15,7 +15,7 @@ Reexport = "189a3867-3050-52da-a836-e630ba90ab69"
 
 [compat]
 AbstractFFTs = "0.5"
-ApproxFunBase = "0.2"
+ApproxFunBase = "0.2, 0.3"
 DomainSets = "0.1"
 FFTW = "1.1"
 FastTransforms = "0.8"

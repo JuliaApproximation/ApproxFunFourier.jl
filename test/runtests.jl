@@ -1,7 +1,8 @@
 using ApproxFunFourier, ApproxFunBase, Test, SpecialFunctions, LinearAlgebra
-    import ApproxFunBase: testspace, testtransforms, testmultiplication, testraggedbelowoperator,
-                      testbandedoperator, testblockbandedoperator, testbandedblockbandedoperator, testcalculus, Block, Vec, testfunctional
-    import SpecialFunctions: factorial
+import ApproxFunBase: testspace, testtransforms, testmultiplication, testraggedbelowoperator,
+                    testbandedoperator, testblockbandedoperator, testbandedblockbandedoperator, 
+                    testcalculus, Block, Vec, testfunctional, EmptyDomain, UnionDomain
+import SpecialFunctions: factorial
 
 @testset "Periodic Domains" begin    
     @test 0.1 ∈ PeriodicSegment(2π,0)
@@ -15,6 +16,10 @@ using ApproxFunFourier, ApproxFunBase, Test, SpecialFunctions, LinearAlgebra
     @test ApproxFunBase.Vec(0,0.5) ∈ PeriodicSegment(ApproxFunBase.Vec(0.0,0), ApproxFunBase.Vec(0,1))
 
     @test ApproxFunBase.Vec(1,0) ∈ Circle((0.,0.),1.)
+
+    @test ∂(PeriodicSegment() × ChebyshevInterval()) isa UnionDomain
+    @test ∂(ChebyshevInterval() × PeriodicSegment()) isa UnionDomain
+    @test ∂(PeriodicSegment() × PeriodicSegment()) isa EmptyDomain
 end
 
 @testset "Cos/SinSpace" begin

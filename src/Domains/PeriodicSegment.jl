@@ -110,13 +110,13 @@ issubset(a::IntervalOrSegment, b::PeriodicSegment) = PeriodicSegment(endpoints(a
 
 
 
-boundary(d::ProductDomain{Tuple{A,B}}) where {A<:IntervalOrSegment,B<:PeriodicSegment} =
+boundary(d::RectDomain{<:Any,<:IntervalOrSegment,<:PeriodicSegment}) =
     UnionDomain((PeriodicSegment(Vec(rightendpoint(factor(d,1)),leftendpoint(factor(d,2))),Vec(rightendpoint(factor(d,1)),rightendpoint(factor(d,2)))),
         PeriodicSegment(Vec(leftendpoint(factor(d,1)),rightendpoint(factor(d,2))),Vec(leftendpoint(factor(d,1)),leftendpoint(factor(d,2))))))
-boundary(d::ProductDomain{Tuple{A,B}}) where {A<:PeriodicSegment,B<:IntervalOrSegment} =
+boundary(d::RectDomain{<:Any,<:PeriodicSegment,<:IntervalOrSegment}) =
     UnionDomain((PeriodicSegment(Vec(leftendpoint(factor(d,1)),leftendpoint(factor(d,2))),Vec(rightendpoint(factor(d,1)),leftendpoint(factor(d,2)))),
         PeriodicSegment(Vec(rightendpoint(factor(d,1)),rightendpoint(factor(d,2))),Vec(leftendpoint(factor(d,1)),rightendpoint(factor(d,2))))))
-boundary(d::ProductDomain{Tuple{A,B}}) where {A<:PeriodicSegment,B<:PeriodicSegment} = EmptyDomain()
+boundary(d::RectDomain{<:Any,<:PeriodicSegment,<:PeriodicSegment}) = EmptyDomain()
 
 union_rule(A::SumSpace{<:Any,<:PeriodicSegment}, B::Space{<:IntervalOrSegment}) =
     union(Space(Interval(domain(A))), B)

@@ -27,7 +27,7 @@ import ApproxFunBase: normalize!, flipsign, FiniteRange, Fun, MatrixFun, UnsetSp
                 plan_transform, plan_itransform, plan_transform!, plan_itransform!, transform, itransform, hasfasttransform, 
                 CanonicalTransformPlan, ICanonicalTransformPlan,
                 Integral, 
-                domainspace, rangespace, boundary, 
+                domainspace, rangespace, 
                 union_rule, conversion_rule, maxspace_rule, conversion_type, maxspace, hasconversion, points, 
                 rdirichlet, ldirichlet, lneumann, rneumann, ivp, bvp, 
                 linesum, differentiate, integrate, linebilinearform, bilinearform, 
@@ -47,7 +47,7 @@ import ApproxFunBase: normalize!, flipsign, FiniteRange, Fun, MatrixFun, UnsetSp
                 block, blockstart, blockstop, blocklengths, isblockbanded, pointscompatible,
                 AbstractProductSpace, MultivariateFun, BivariateSpace, 
                 @wrapperstructure, @wrapperspaces, @wrapper, @calculus_operator, resizedata!, slnorm, affine_setdiff,
-                complexroots
+                complexroots, EmptyDomain, RectDomain
 
                     
 import DomainSets: Domain, indomain, UnionDomain, ProductDomain, FullSpace, Point, elements, DifferenceDomain,

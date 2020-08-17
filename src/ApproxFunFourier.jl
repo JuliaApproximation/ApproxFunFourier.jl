@@ -245,8 +245,8 @@ points(sp::CosSpace,n) = points(domain(sp),2n-2)[1:n]
 
 
 
-plan_transform(::CosSpace,x::AbstractVector) = plan_chebyshevtransform(x;kind=2)
-plan_itransform(::CosSpace,x::AbstractVector) = plan_ichebyshevtransform(x;kind=2)
+plan_transform(::CosSpace,x::AbstractVector) = plan_chebyshevtransform(x, Val(2))
+plan_itransform(::CosSpace,x::AbstractVector) = plan_ichebyshevtransform(x, Val(2))
 transform(::CosSpace,vals,plan) = plan*vals
 itransform(::CosSpace,cfs,plan) = plan*cfs
 

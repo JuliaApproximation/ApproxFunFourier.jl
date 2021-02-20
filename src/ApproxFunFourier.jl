@@ -71,7 +71,7 @@ import LinearAlgebra: BlasInt, BlasFloat, norm, ldiv!, mul!, det, eigvals, dot, 
                 Tridiagonal, diagm, diagm_container, factorize, nullspace,
                 Hermitian, Symmetric, adjoint, transpose, char_uplo                
 
-import InfiniteArrays: Infinity, InfRanges, AbstractInfUnitRange, OneToInf                    
+import InfiniteArrays: InfRanges, AbstractInfUnitRange, OneToInf                    
 
 import FastTransforms: ChebyshevTransformPlan, IChebyshevTransformPlan, plan_chebyshevtransform,
                         plan_chebyshevtransform!, plan_ichebyshevtransform, plan_ichebyshevtransform!

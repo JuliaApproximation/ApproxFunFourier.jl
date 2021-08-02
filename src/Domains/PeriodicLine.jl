@@ -27,6 +27,8 @@ PeriodicLine(c,a) = PeriodicLine{a/π,eltype(c)}(c,1.)
 PeriodicLine() = PeriodicLine{false,Float64}(0.,1.)
 PeriodicLine(b::Bool) = PeriodicLine{b,Float64}()
 
+==(a::PeriodicLine, b::PeriodicLine) = a.center == b.center && a.L == b.L
+
 isambiguous(d::PeriodicLine) = isnan(d.center) && isnan(d.angle)
 convert(::Type{Domain{T}},d::PeriodicLine{a}) where {a,T<:Number} = PeriodicLine{a,T}(d.center, d.L)
 convert(::Type{PeriodicLine{T,TT}},::AnyDomain) where {T<:Number,TT} = PeriodicLine{T,TT}(NaN,NaN)

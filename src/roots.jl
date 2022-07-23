@@ -49,7 +49,7 @@ function complexroots(cfs::Vector{T}) where T<:Union{BigFloat,Complex{BigFloat}}
 end
 
 complexroots(neg::Vector, pos::Vector) =
-    complexroots([reverse(chop(neg,10*eps()), dims=1);pos])
+    complexroots([reverse(chop(neg,10eps()), dims=1);pos])
 complexroots(f::Fun{Laurent{DD,RR}}) where {DD,RR} =
     mappoint.(Ref(Circle()), Ref(domain(f)),
         complexroots(f.coefficients[2:2:end],f.coefficients[1:2:end]))

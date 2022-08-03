@@ -1,7 +1,7 @@
 module ApproxFunFourier
-using Base, LinearAlgebra, Reexport, AbstractFFTs, FFTW, InfiniteArrays, FastTransforms, IntervalSets, 
+using Base, LinearAlgebra, Reexport, AbstractFFTs, FFTW, InfiniteArrays, FastTransforms, IntervalSets,
             DomainSets
-            
+
 @reexport using ApproxFunBase
 
 import AbstractFFTs: Plan, fft, ifft
@@ -12,32 +12,32 @@ import ApproxFunBase: normalize!, flipsign, FiniteRange, Fun, MatrixFun, UnsetSp
                 UnivariateSpace, AmbiguousSpace, SumSpace, SubSpace, WeightSpace, NoSpace, Space,
                 HeavisideSpace, PointSpace,
                 IntervalOrSegment, RaggedMatrix, AlmostBandedMatrix,
-                AnyDomain, ZeroSpace, ArraySpace, TrivialInterlacer, BlockInterlacer, 
+                AnyDomain, ZeroSpace, ArraySpace, TrivialInterlacer, BlockInterlacer,
                 AbstractTransformPlan, TransformPlan, ITransformPlan,
                 ConcreteConversion, ConcreteMultiplication, ConcreteDerivative, ConcreteIntegral, CalculusOperator,
                 ConcreteVolterra, Volterra, VolterraWrapper,
                 MultiplicationWrapper, ConversionWrapper, DerivativeWrapper, Evaluation, EvaluationWrapper,
-                Conversion, defaultConversion, defaultcoefficients, default_Fun, Multiplication, Derivative, Integral, bandwidths, 
+                Conversion, defaultConversion, defaultcoefficients, default_Fun, Multiplication, Derivative, Integral, bandwidths,
                 ConcreteEvaluation, ConcreteDefiniteLineIntegral, ConcreteDefiniteIntegral, ConcreteIntegral,
                 DefiniteLineIntegral, DefiniteIntegral, ConcreteDefiniteIntegral, ConcreteDefiniteLineIntegral, IntegralWrapper,
-                ReverseOrientation, ReverseOrientationWrapper, ReverseWrapper, Reverse, NegateEven, 
+                ReverseOrientation, ReverseOrientationWrapper, ReverseWrapper, Reverse, NegateEven,
                 Dirichlet, ConcreteDirichlet, DirichletWrapper,
                 TridiagonalOperator, SubOperator, Space, @containsconstants, spacescompatible,
-                hasfasttransform, canonicalspace, domain, setdomain, prectype, domainscompatible, 
-                plan_transform, plan_itransform, plan_transform!, plan_itransform!, transform, itransform, hasfasttransform, 
+                hasfasttransform, canonicalspace, domain, setdomain, prectype, domainscompatible,
+                plan_transform, plan_itransform, plan_transform!, plan_itransform!, transform, itransform, hasfasttransform,
                 CanonicalTransformPlan, ICanonicalTransformPlan,
-                Integral, 
-                domainspace, rangespace, 
-                union_rule, conversion_rule, maxspace_rule, conversion_type, maxspace, hasconversion, points, 
-                rdirichlet, ldirichlet, lneumann, rneumann, ivp, bvp, 
-                linesum, differentiate, integrate, linebilinearform, bilinearform, 
+                Integral,
+                domainspace, rangespace,
+                union_rule, conversion_rule, maxspace_rule, conversion_type, maxspace, hasconversion, points,
+                rdirichlet, ldirichlet, lneumann, rneumann, ivp, bvp,
+                linesum, differentiate, integrate, linebilinearform, bilinearform,
                 UnsetNumber, coefficienttimes, subspace_coefficients, sumspacecoefficients, specialfunctionnormalizationpoint,
                 Segment, IntervalOrSegmentDomain, PiecewiseSegment, isambiguous, Vec, eps, isperiodic,
                 arclength, complexlength,
                 invfromcanonicalD, fromcanonical, tocanonical, fromcanonicalD, tocanonicalD, canonicaldomain, setcanonicaldomain, mappoint,
                 reverseorientation, checkpoints, evaluate, mul_coefficients, coefficients, coefficientmatrix, isconvertible,
                 clenshaw, ClenshawPlan, sineshaw,
-                toeplitz_getindex, toeplitz_axpy!, sym_toeplitz_axpy!, hankel_axpy!, ToeplitzOperator, SymToeplitzOperator, hankel_getindex, 
+                toeplitz_getindex, toeplitz_axpy!, sym_toeplitz_axpy!, hankel_axpy!, ToeplitzOperator, SymToeplitzOperator, hankel_getindex,
                 SpaceOperator, ZeroOperator, InterlaceOperator,
                 interlace!, reverseeven!, negateeven!, cfstype, pad!, alternatesign!, mobius,
                 extremal_args, hesseneigvals, chebyshev_clenshaw, recA, recB, recC, roots,splitatroots,
@@ -45,11 +45,11 @@ import ApproxFunBase: normalize!, flipsign, FiniteRange, Fun, MatrixFun, UnsetSp
                 domaintype, diagindshift, rangetype, weight, isapproxinteger, default_Dirichlet, scal!, dotu,
                 components, promoterangespace, promotedomainspace, choosedomainspace,
                 block, blockstart, blockstop, blocklengths, isblockbanded, pointscompatible,
-                AbstractProductSpace, MultivariateFun, BivariateSpace, 
+                AbstractProductSpace, MultivariateFun, BivariateSpace,
                 @wrapperstructure, @wrapperspaces, @wrapper, @calculus_operator, resizedata!, slnorm, affine_setdiff,
                 complexroots, EmptyDomain, RectDomain
 
-                    
+
 import DomainSets: Domain, indomain, UnionDomain, ProductDomain, FullSpace, Point, elements, DifferenceDomain,
             Interval, ChebyshevInterval, boundary, ∂, rightendpoint, leftendpoint,
             dimension
@@ -69,13 +69,13 @@ import Base: values, convert, getindex, setindex!, *, +, -, ==, <, <=, >, |, !, 
 import LinearAlgebra: BlasInt, BlasFloat, norm, ldiv!, mul!, det, eigvals, dot, cross,
                 qr, qr!, rank, isdiag, istril, istriu, issymmetric, ishermitian,
                 Tridiagonal, diagm, diagm_container, factorize, nullspace,
-                Hermitian, Symmetric, adjoint, transpose, char_uplo                
+                Hermitian, Symmetric, adjoint, transpose, char_uplo
 
-import InfiniteArrays: InfRanges, AbstractInfUnitRange, OneToInf                    
+import InfiniteArrays: InfRanges, AbstractInfUnitRange, OneToInf
 
 import FastTransforms: ChebyshevTransformPlan, IChebyshevTransformPlan, plan_chebyshevtransform,
                         plan_chebyshevtransform!, plan_ichebyshevtransform, plan_ichebyshevtransform!
-    
+
 
 export Fourier, Taylor, Hardy, CosSpace, SinSpace, Laurent, PeriodicDomain
 
@@ -612,6 +612,6 @@ function Fun(T::ToeplitzOperator)
          Fun(Laurent(Circle()),interlace(T.nonnegative,T.negative))
      end
  end
- 
+
 
 end #module

@@ -121,5 +121,5 @@ boundary(d::VcatDomain{2,<:Any,(1,1),<:Tuple{<:PeriodicSegment,<:PeriodicSegment
 union_rule(A::SumSpace{<:Any,<:PeriodicSegment}, B::Space{<:IntervalOrSegment}) =
     union(Space(Interval(domain(A))), B)
 
-Base.setdiff(d::PeriodicSegment, ptsin::UnionDomain{AS}) where {AS <: AbstractVector{P}} where {P <: Point} = 
+Base.setdiff(d::PeriodicSegment, ptsin::UnionDomain{AS}) where {AS <: AbstractVector{P}} where {P <: Point} =
     affine_setdiff(d, ptsin)

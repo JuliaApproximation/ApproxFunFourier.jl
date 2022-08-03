@@ -1,10 +1,10 @@
 using ApproxFunFourier, ApproxFunBase, Test, SpecialFunctions, LinearAlgebra
 import ApproxFunBase: testspace, testtransforms, testmultiplication, testraggedbelowoperator,
-                    testbandedoperator, testblockbandedoperator, testbandedblockbandedoperator, 
+                    testbandedoperator, testblockbandedoperator, testbandedblockbandedoperator,
                     testcalculus, Block, Vec, testfunctional, EmptyDomain, UnionDomain
 import SpecialFunctions: factorial
 
-@testset "Periodic Domains" begin    
+@testset "Periodic Domains" begin
     @test 0.1 ∈ PeriodicSegment(2π,0)
     @test 100.0 ∈ PeriodicSegment(0,2π)
     @test -100.0 ∈ PeriodicSegment(0,2π)
@@ -103,7 +103,7 @@ end
     @test Fun(Taylor(Circle(0.1,2.2)))(1.0) ≈ 1.0
     @test Fun(Taylor(Circle(0.1+0.1im,2.2)))(1.0) ≈ 1.0
 
-    @test Multiplication(Fun(Taylor()),Taylor())[1:3,1:3] == [0. 0. 0.; 1. 0. 0.; 0. 1. 0.]   
+    @test Multiplication(Fun(Taylor()),Taylor())[1:3,1:3] == [0. 0. 0.; 1. 0. 0.; 0. 1. 0.]
 
     # check's Derivative constructor works
     D=Derivative(Taylor(PeriodicSegment()))
@@ -212,15 +212,15 @@ end
         u=[Evaluation(S,0.),D-I]\[1.;0.]
         @test norm((u-ef).coefficients)<200eps()
         @test norm((Integral(S)*Fun(exp,S)+ef.coefficients[1]-ef).coefficients)<100eps()
-    
-    
+
+
         f=Fun(z->exp(1/z)-1,Hardy{false}(d))
         df=Fun(z->-1/z^2*exp(1/z),Hardy{false}(d))
         @test norm((Derivative()*f-df).coefficients)<1000eps()
         @test norm((Derivative()^2*f-df').coefficients)<100000eps()
         @test norm((f'-df).coefficients)<1000eps()
-    end      
-      
+    end
+
     d=Circle()
     S=Taylor(d)
     D=Derivative(S)
@@ -366,7 +366,7 @@ end
     end
 end
 
-@testset "Integral equations" begin    
+@testset "Integral equations" begin
     @time for S in (Fourier(Circle()),Laurent(Circle()),Taylor(Circle()),CosSpace(Circle()))
         testfunctional(DefiniteLineIntegral(S))
     end

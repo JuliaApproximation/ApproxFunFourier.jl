@@ -1,8 +1,12 @@
-using ApproxFunFourier, ApproxFunBase, Test, SpecialFunctions, LinearAlgebra
+using ApproxFunFourier
+using ApproxFunBase
 import ApproxFunBase: testspace, testtransforms, testmultiplication, testraggedbelowoperator,
                     testbandedoperator, testblockbandedoperator, testbandedblockbandedoperator,
                     testcalculus, Block, Vec, testfunctional, EmptyDomain, UnionDomain
+using LinearAlgebra
+using SpecialFunctions
 import SpecialFunctions: factorial
+using Test
 
 @testset "Periodic Domains" begin
     @test 0.1 ∈ PeriodicSegment(2π,0)

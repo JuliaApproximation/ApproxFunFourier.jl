@@ -44,7 +44,7 @@ import DomainSets: Domain, indomain, UnionDomain, Point, Interval,
 
 import Base: convert, getindex, *, +, -, ==,  /, eltype,
             show, sum, cumsum, conj, issubset, first, last, rand, setdiff,
-            angle, isempty, zeros, one, promote_rule, real, imag
+            angle, isempty, zeros, one, promote_rule, real, imag, union
 
 import LinearAlgebra: norm, mul!, isdiag
 
@@ -530,6 +530,52 @@ canonicalspace(S::Laurent{DD,RR}) where {DD<:PeriodicSegment,RR} = Fourier(domai
 canonicalspace(S::Fourier{DD,RR}) where {DD<:Circle,RR} = Laurent(domain(S))
 canonicalspace(S::Laurent{DD,RR}) where {DD<:PeriodicLine,RR} = S
 
+# avoid cyclic recursion between CosSpace and Fourier
+# check if one domain is a multiple of another
+# return the multiple
+period(F::Fourier) = period(domain(F))
+function period(A::Domain)
+    la, ra = leftendpoint(A), rightendpoint(A)
+    ra - la
+end
+function domainsmultiple(A::Domain, B::Domain)
+    isapprox(A, B) && return 1
+    da = period(A)
+    db = period(B)
+    dmin, dmax = minmax(da, db)
+    T = promote_type(eltype(A), eltype(B))
+    isapprox(mod(dmax, dmin), 0, atol=eps(T)) && return round(Int, dmax/dmin, RoundNearest)
+    return nothing
+end
+domainsmultiple(A::Space, B::Space) = domainsmultiple(map(domain, (A,B))...)
+function union_by_union_rule(A::Fourier, B::Fourier)
+    dA, dB = map(domain, (A,B))
+    AB = domainsmultiple(dA, dB)
+    isnothing(AB) || return Fourier(max(dA, dB))
+    A ⊕ B
+end
+function coefficients(v::AbstractVector, A::Fourier, B::Fourier)
+    n = domainsmultiple(A, B)
+    isnothing(n) && error("spaces are not compatible")
+    n == 1 && return copy(v)
+    if period(A) < period(B)
+        v2 = zeros(eltype(v), n * length(v) - isodd(length(v)))
+        for (i, vi) in enumerate(v)
+            v2[n * i - isodd(i)] = vi
+        end
+    else
+        for (ind, vi) in enumerate(v)
+            if isodd(div(ind, n, RoundDown)) && !isapprox(vi, 0, atol=eps(eltype(vi)))
+                throw(ArgumentError("coefficients incompatible with space conversion"))
+            end
+        end
+        v2 = zeros(eltype(v), div(length(v) + isodd(length(v)), n))
+        for i in eachindex(v2)
+            v2[i] = v[n * i - isodd(i)]
+        end
+    end
+    return v2
+end
 
 ## Ones and zeros
 

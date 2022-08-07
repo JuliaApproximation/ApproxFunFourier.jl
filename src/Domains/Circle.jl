@@ -43,14 +43,18 @@ convert(::Type{Circle{T,V}},::AnyDomain) where {T<:Number,V<:Real} = Circle{T,V}
 convert(::Type{IT},::AnyDomain) where {IT<:Circle} = Circle(NaN,NaN)
 
 
+function _tocanonical(v)
+	θ = atan(v[2]-0.0, v[1])  # -0.0 to get branch cut right
+    mod2pi(θ)
+end
 function tocanonical(d::Circle{T},ζ) where T<:Number
     v=mappoint(d,Circle(),ζ)
-    atan(imag(v)-0.0,real(v))  # -0.0 to get branch cut right
+	_tocanonical(reim(v))
 end
 
 function tocanonical(d::Circle{T},ζ) where T<:Vec
     v=mappoint(d,Circle((0.0,0.0),1.0),ζ)
-    atan(v[2]-0.0,v[1])  # -0.0 to get branch cut right
+	_tocanonical(v)
 end
 
 

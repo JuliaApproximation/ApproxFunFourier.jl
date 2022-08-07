@@ -540,18 +540,22 @@ function period(A::Domain)
 end
 function domainsmultiple(A::Domain, B::Domain)
     isapprox(A, B) && return 1
-    da = period(A)
-    db = period(B)
-    dmin, dmax = minmax(da, db)
+    la, ra = leftendpoint(A), rightendpoint(A)
+    lb, rb = leftendpoint(B), rightendpoint(B)
+    pa = ra - la
+    pb = rb - lb
+    dmin, dmax = minmax(pa, pb)
     T = promote_type(eltype(A), eltype(B))
-    isapprox(mod(dmax, dmin), 0, atol=eps(T)) && return round(Int, dmax/dmin, RoundNearest)
+    if isapprox(mod(dmax, dmin), 0, atol=eps(T)) && (la ≈ lb || ra ≈ rb)
+        return round(Int, dmax/dmin, RoundNearest)
+    end
     return nothing
 end
 domainsmultiple(A::Space, B::Space) = domainsmultiple(map(domain, (A,B))...)
 function union_by_union_rule(A::Fourier, B::Fourier)
     dA, dB = map(domain, (A,B))
     AB = domainsmultiple(dA, dB)
-    isnothing(AB) || return Fourier(max(dA, dB))
+    isnothing(AB) || return Fourier(period(dA) > period(dB) ? dA : dB)
     A ⊕ B
 end
 function coefficients(v::AbstractVector, A::Fourier, B::Fourier)

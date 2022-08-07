@@ -597,3 +597,17 @@ end
     f=Fun(z->2exp(z^2),PeriodicLine(0.,π/2))
     @test f(1.1im) ≈ 2exp(-1.1^2)
 end
+
+@testset "show" begin
+    for (spT, spstr) in Any[(Fourier, "Fourier"), (CosSpace, "CosSpace"),
+            (SinSpace, "SinSpace"), (Laurent, "Laurent"), (Taylor, "Taylor")]
+        sp = spT()
+        str = repr(sp)
+        @test contains(str, spstr)
+        d = domain(sp)
+        if d isa ApproxFunFourier.PeriodicSegment
+            @test contains(str, repr(leftendpoint(d)))
+            @test contains(str, repr(rightendpoint(d)))
+        end
+    end
+end

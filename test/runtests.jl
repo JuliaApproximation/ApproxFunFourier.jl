@@ -188,13 +188,24 @@ end
     @test norm(ApproxFunBase.Reverse(Fourier())*Fun(t->cos(cos(t-0.2)-0.1),Fourier()) - Fun(t->cos(cos(-t-0.2)-0.1),Fourier())) < 10eps()
     @test norm(ApproxFunBase.ReverseOrientation(Fourier())*Fun(t->cos(cos(t-0.2)-0.1),Fourier()) - Fun(t->cos(cos(t-0.2)-0.1),Fourier(PeriodicSegment(2π,0)))) < 10eps()
 
-    @testset "issue #741" begin
+    @testset "ApproxFun issue #741" begin
         c = Fun(cos, Fourier())
         @test roots(c) ≈ (1:2:3) * pi/2
         c = Fun(cos, Fourier(0..4pi))
         @test roots(c) ≈ (1:2:7) * pi/2
         c = Fun(cos, Fourier(-2pi..2pi))
         @test roots(c) ≈ (-3:2:3) * pi/2
+    end
+
+    @testset "ApproxFun issue #768" begin
+        s1 = Fourier(0..pi)
+        f1 = Fun(t -> sin(2*t),s1)
+        @testset for d2 in [0..2pi, 0..3pi]
+            s2 = Fourier(d2)
+            f2 = Fun(t -> sin(2*t),s2)
+            g = f1 + f2
+            @test g(pi/3) ≈ f1(pi/3) + f2(pi/3)
+        end
     end
 end
 

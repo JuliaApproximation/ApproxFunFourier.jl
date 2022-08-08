@@ -209,9 +209,15 @@ end
     end
 
     @testset "coeff conversion" begin
-        f1 = Fun(t->1+2sin(t)+3cos(t), Fourier(0..2pi))
-        f2 = Fun(t->1+2sin(t)+3cos(t), Fourier(0..4pi))
+        f = t->1+2sin(t)+3cos(t)
+        f1 = Fun(f, Fourier(0..2pi))
+
+        f2 = Fun(f, Fourier(0..4pi))
         @test coefficients(coefficients(f1), space(f1), space(f2)) ≈ coefficients(f2)
+
+        f3 = Fun(f, Fourier(0..8pi))
+        @test coefficients(coefficients(f1), space(f1), space(f3)) ≈ coefficients(f3)
+
         @test coefficients([1,0,0,2,3], Fourier(0..4pi), Fourier(0..2pi)) ≈ [1,2,3]
         @test coefficients([1,2,3], Fourier(0..2pi), Fourier(0..4pi)) ≈ [1; zeros(2); [2,3]]
         @test coefficients([1; zeros(2); [2,3]], Fourier(0..4pi), Fourier(0..2pi)) ≈ [1,2,3]

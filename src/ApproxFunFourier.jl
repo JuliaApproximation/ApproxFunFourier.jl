@@ -569,7 +569,7 @@ function coefficients(v::AbstractVector, A::Fourier, B::Fourier)
         end
     else
         for (ind, vi) in enumerate(v)
-            if isodd(div(ind, n, RoundDown)) && !isapprox(vi, 0, atol=eps(eltype(vi)))
+            if isodd(div(ind, n)) && !isapprox(vi, 0, atol=eps(eltype(vi)))
                 throw(ArgumentError("coefficients incompatible with space conversion"))
             end
         end

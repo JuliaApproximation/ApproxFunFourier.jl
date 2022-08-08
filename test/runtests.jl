@@ -603,11 +603,11 @@ end
             (SinSpace, "SinSpace"), (Laurent, "Laurent"), (Taylor, "Taylor")]
         sp = spT()
         str = repr(sp)
-        @test contains(str, spstr)
+        @test occursin(spstr, str)
         d = domain(sp)
         if d isa ApproxFunFourier.PeriodicSegment
-            @test contains(str, repr(leftendpoint(d)))
-            @test contains(str, repr(rightendpoint(d)))
+            @test occursin(repr(leftendpoint(d)), str)
+            @test occursin(repr(rightendpoint(d)), str)
         end
     end
 end

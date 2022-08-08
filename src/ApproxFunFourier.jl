@@ -566,14 +566,16 @@ function union(A::Fourier, B::Fourier)
     isnothing(AB) || return Fourier(period(dA) > period(dB) ? dA : dB)
     A ⊕ B
 end
+_ind(i, n) = 2n * div(i, 2) + isodd(i)
+_invind(i, n) = 2div(i - isodd(i), 2n) + isodd(i)
 function coefficients(v::AbstractVector, A::Fourier, B::Fourier)
     n = domainsmultiple(A, B)
     isnothing(n) && error("spaces are not compatible")
     n == 1 && return copy(v)
     if period(A) < period(B)
-        v2 = zeros(eltype(v), n * length(v) - isodd(length(v)))
+        v2 = zeros(eltype(v), _ind(length(v), n))
         for (i, vi) in enumerate(v)
-            v2[n * i - isodd(i)] = vi
+            v2[_ind(i, n)] = vi
         end
     else
         for (ind, vi) in enumerate(v)
@@ -581,9 +583,9 @@ function coefficients(v::AbstractVector, A::Fourier, B::Fourier)
                 throw(ArgumentError("coefficients incompatible with space conversion"))
             end
         end
-        v2 = zeros(eltype(v), div(length(v) + isodd(length(v)), n))
+        v2 = zeros(eltype(v), _invind(length(v), n))
         for i in eachindex(v2)
-            v2[i] = v[n * i - isodd(i)]
+            v2[i] = v[_ind(i, n)]
         end
     end
     return v2

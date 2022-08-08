@@ -42,9 +42,17 @@ import BandedMatrices: bandwidths
 import DomainSets: Domain, indomain, UnionDomain, Point, Interval,
             boundary, rightendpoint, leftendpoint, endpoints
 
-import Base: convert, getindex, *, +, -, ==,  /, eltype,
-            show, sum, cumsum, conj, issubset, first, last, rand, setdiff,
-            angle, isempty, zeros, one, promote_rule, real, imag, union
+import Base: values, convert, getindex, setindex!, *, +, -, ==, <, <=, >, |, !, !=, eltype, iterate,
+                >=, /, ^, \, ∪, transpose, size, tail, broadcast, broadcast!, copyto!, copy, to_index, (:),
+                similar, map, vcat, hcat, hvcat, show, summary, stride, sum, cumsum, conj, inv,
+                complex, reverse, exp, sqrt, abs, abs2, sign, issubset, in, first, last, rand, intersect, setdiff,
+                isless, union, angle, join, isnan, isapprox, isempty, sort, merge,
+                minimum, maximum, extrema, argmax, argmin, findmax, findmin, isfinite,
+                zeros, zero, one, promote_rule, repeat, length, resize!, isinf,
+                getproperty, findfirst, unsafe_getindex, fld, cld, div, real, imag,
+                @_inline_meta, eachindex, firstindex, lastindex, keys, isreal, OneTo,
+                Array, Vector, Matrix, view, ones, @propagate_inbounds, print_array,
+                split
 
 import LinearAlgebra: norm, mul!, isdiag
 
@@ -552,7 +560,7 @@ function domainsmultiple(A::Domain, B::Domain)
     return nothing
 end
 domainsmultiple(A::Space, B::Space) = domainsmultiple(map(domain, (A,B))...)
-function union_by_union_rule(A::Fourier, B::Fourier)
+function union(A::Fourier, B::Fourier)
     dA, dB = map(domain, (A,B))
     AB = domainsmultiple(dA, dB)
     isnothing(AB) || return Fourier(period(dA) > period(dB) ? dA : dB)

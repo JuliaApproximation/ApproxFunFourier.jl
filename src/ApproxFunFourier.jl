@@ -100,12 +100,26 @@ for T in (:CosSpace,:SinSpace)
 end
 
 """
-`CosSpace()` is the space spanned by `[1,cos θ,cos 2θ,...]`
+    CosSpace()
+The space spanned by `[1, cos θ, cos 2θ, ...]`
+
+---
+
+    CosSpace(d::Domain)
+
+The space spanned by `[1,cos(2pi/L*θ), cos(2pi/L*2θ), ...]` for a domain with a period `L`
 """
 CosSpace()
 
 """
-`SinSpace()` is the space spanned by `[sin θ,sin 2θ,...]`
+    SinSpace()
+The space spanned by `[sin θ, sin 2θ, ...]`
+
+---
+
+    SinSpace(d::Domain)
+
+The space spanned by `[1, sin(2pi/L*θ), sin(2pi/L*2θ), ...]` for a domain with a period `L`
 """
 SinSpace()
 
@@ -301,11 +315,21 @@ evaluate(f::AbstractVector,S::SinSpace,t) = sineshaw(f,tocanonical(S,t))
 
 ## Laurent space
 """
-`Laurent()` is the space spanned by the complex exponentials
+    Laurent()
+The space spanned by the complex exponentials
 ```
     1,exp(-im*θ),exp(im*θ),exp(-2im*θ),…
 ```
-See also `Fourier`.
+See also [`Fourier`](@ref).
+
+---
+
+    Laurent(d::Domain)
+The space spanned by the complex exponentials
+```
+    1, exp(-im * (2pi/L*θ)), exp(im * (2pi/L*θ)), exp(-2im * (2pi/L*θ)), …
+```
+for a domain with a period `L`.
 """
 const Laurent{DD,RR} = SumSpace{Tuple{Hardy{true,DD,RR},Hardy{false,DD,RR}},DD,RR}
 
@@ -393,11 +417,21 @@ end
 ## Fourier space
 
 """
-`Fourier()` is the space spanned by the trigonemtric polynomials
+    Fourier()
+The space spanned by the trigonemtric polynomials
 ```
-    1,sin(θ),cos(θ),sin(2θ),cos(2θ),…
+    1, sin(θ), cos(θ), sin(2θ), cos(2θ), …
 ```
 See also `Laurent`.
+
+---
+
+    Fourier(d::Domain)
+The space spanned by the trigonemtric polynomials
+```
+    1, sin(2pi/L*θ), cos(2pi/L*θ), sin(2pi/L*2θ), cos(2pi/L*2θ), …
+```
+for a domain with a period `L`.
 """
 const Fourier{DD,RR} = SumSpace{Tuple{CosSpace{DD,RR},SinSpace{DD,RR}},DD,RR}
 

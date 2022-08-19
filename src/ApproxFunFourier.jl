@@ -647,5 +647,19 @@ function Fun(T::ToeplitzOperator)
      end
  end
 
+Base.show(io::IO,d::Circle) =
+    print(io,(d.radius==1 ? "" : string(d.radius))*
+                    (d.orientation ? "🕒" : "🕞")*
+                    (d.center==0 ? "" : "+$(d.center)"))
+
+Base.show(io::IO, d::PeriodicSegment) = print(io,"【$(leftendpoint(d)),$(rightendpoint(d))❫")
+for typ in (:Fourier, :Laurent, :Taylor, :SinSpace, :CosSpace)
+    typstr = string(typ)
+    @eval function Base.show(io::IO, S::$typ)
+        print(io, $typstr, "(")
+        show(io, domain(S))
+        print(io, ")")
+    end
+end
 
 end #module

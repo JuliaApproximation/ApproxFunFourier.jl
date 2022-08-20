@@ -5,7 +5,7 @@ import ApproxFunBase: testspace, testtransforms, testmultiplication, testraggedb
                     testcalculus, Block, Vec, testfunctional, EmptyDomain, UnionDomain
 using LinearAlgebra
 using SpecialFunctions
-import SpecialFunctions: factorial
+_factorial(n) = gamma(n+1)
 using Test
 
 @testset "Periodic Domains" begin
@@ -262,7 +262,7 @@ end
     z=Fun(identity,Circle())
     cfs=exp(z).coefficients[1:2:end]
     for k=1:length(cfs)
-        @test abs(cfs[k]-1/factorial(1.0(k-1))) ≤ 1E-10
+        @test abs(cfs[k]-1/_factorial(k-1)) ≤ 1E-10
     end
 
     ## Test bug in multiplication

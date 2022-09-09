@@ -8,6 +8,11 @@ using SpecialFunctions
 _factorial(n) = gamma(n+1)
 using Test
 
+using Aqua
+@testset "Project quality" begin
+    Aqua.test_all(ApproxFunFourier, ambiguities=false, undefined_exports=false)
+end
+
 @testset "Periodic Domains" begin
     @test 0.1 ∈ PeriodicSegment(2π,0)
     @test 100.0 ∈ PeriodicSegment(0,2π)

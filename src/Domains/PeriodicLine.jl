@@ -1,6 +1,4 @@
-
-
-export Line, PeriodicLine
+export PeriodicLine
 
 
 

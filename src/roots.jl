@@ -30,6 +30,9 @@ end
 #         end
 #     end
 # else
+complexroots(cfs::Vector{T}) where T = 
+    sort(eigvals(companion_matrix(chop(cfs, 10*eps(T)))), lt = (x, y) -> real(x) < real(y) ? true : (real(x) > real(y) ? false : (imag(x) < imag(y) ? true : false)), rev=true)
+
 complexroots(cfs::Vector{T}) where {T<:Union{Float64,ComplexF64}} =
     hesseneigvals(companion_matrix(chop(cfs,10eps())))
 # end
@@ -56,9 +59,9 @@ complexroots(f::Fun{Taylor{DD,RR}}) where {DD,RR} =
 
 
 function roots(f::Fun{Laurent{DD,RR}}) where {DD,RR}
-    irts=filter!(z->in(z,Circle()),complexroots(Fun(Laurent(Circle()),f.coefficients)))
+    irts=filter!(z->in(z,Circle(real(eltype(z)))),complexroots(Fun(Laurent(Circle()),f.coefficients)))
     if length(irts)==0
-        Complex{Float64}[]
+        irts
     else
         rts=fromcanonical.(f, tocanonical.(Ref(Circle()), irts))
         if isa(domain(f),PeriodicSegment)

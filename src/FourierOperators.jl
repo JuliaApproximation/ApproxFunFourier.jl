@@ -92,8 +92,8 @@ function Derivative(S::Union{CosSpace,SinSpace},order)
 end
 
 
-bandwidths(D::ConcreteDerivative{CS}) where {CS<:CosSpace} = iseven(D.order) ? (0,0) : (0,1)
-bandwidths(D::ConcreteDerivative{S}) where {S<:SinSpace} = iseven(D.order) ? (0,0) : (1,0)
+bandwidths(D::ConcreteDerivative{CS}) where {CS<:CosSpace} = iseven(D.order) ? (0,0) : (-1,1)
+bandwidths(D::ConcreteDerivative{S}) where {S<:SinSpace} = iseven(D.order) ? (0,0) : (1,-1)
 rangespace(D::ConcreteDerivative{S}) where {S<:CosSpace} = iseven(D.order) ? D.space : SinSpace(domain(D))
 rangespace(D::ConcreteDerivative{S}) where {S<:SinSpace} = iseven(D.order) ? D.space : CosSpace(domain(D))
 

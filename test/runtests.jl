@@ -10,7 +10,7 @@ using Test
 
 using Aqua
 @testset "Project quality" begin
-    Aqua.test_all(ApproxFunFourier, ambiguities=false, undefined_exports=false)
+    Aqua.test_all(ApproxFunFourier, ambiguities=false)
 end
 
 @testset "Periodic Domains" begin

@@ -6,6 +6,8 @@ Support for Fourier-based spaces in ApproxFun
 [![Build Status](https://travis-ci.org/JuliaApproximation/ApproxFunFourier.jl.svg?branch=master)](https://travis-ci.org/JuliaApproximation/ApproxFunFourier.jl) 
 [![Build status](https://ci.appveyor.com/api/projects/status/lqq3uoi3rr0552q2?svg=true)](https://ci.appveyor.com/project/dlfivefifty/approxfunfourier-jl)
 [![codecov](https://codecov.io/gh/JuliaApproximation/ApproxFunFourier.jl/branch/master/graph/badge.svg)](https://codecov.io/gh/JuliaApproximation/ApproxFunFourier.jl)
+[![deps](https://juliahub.com/docs/ApproxFunFourier/deps.svg)](https://juliahub.com/ui/Packages/ApproxFunFourier/qUHoD?t=2)
+[![version](https://juliahub.com/docs/ApproxFunFourier/version.svg)](https://juliahub.com/ui/Packages/ApproxFunFourier/qUHoD)
 [![Join the chat at https://gitter.im/JuliaApproximation/ApproxFun.jl](https://badges.gitter.im/JuliaApproximation/ApproxFun.jl.svg)](https://gitter.im/JuliaApproximation/ApproxFun.jl?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 

@@ -16,6 +16,7 @@ Reexport = "189a3867-3050-52da-a836-e630ba90ab69"
 [compat]
 AbstractFFTs = "0.5, 1"
 ApproxFunBase = "0.7"
+ApproxFunBaseTest = "0.1"
 Aqua = "0.5"
 DomainSets = "0.3, 0.4, 0.5"
 FFTW = "1.1"
@@ -27,9 +28,10 @@ SpecialFunctions = "0.8, 0.9, 0.10, 1.0, 2.0"
 julia = "1.6"
 
 [extras]
+ApproxFunBaseTest = "a931bfaf-0cfd-4a5c-b69c-bf2eed002b43"
 Aqua = "4c88cf16-eb10-579e-8560-4a9242c79595"
 SpecialFunctions = "276daf66-3868-5448-9aa4-cd146d93841b"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 
 [targets]
-test = ["Aqua", "Test", "SpecialFunctions"]
+test = ["ApproxFunBaseTest", "Aqua", "Test", "SpecialFunctions"]

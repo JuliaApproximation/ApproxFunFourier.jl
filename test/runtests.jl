@@ -1,8 +1,9 @@
 using ApproxFunFourier
 using ApproxFunBase
-import ApproxFunBase: testspace, testtransforms, testmultiplication, testraggedbelowoperator,
+using ApproxFunBase: Block, Vec, EmptyDomain, UnionDomain
+using ApproxFunBaseTest: testspace, testtransforms, testmultiplication, testraggedbelowoperator,
                     testbandedoperator, testblockbandedoperator, testbandedblockbandedoperator,
-                    testcalculus, Block, Vec, testfunctional, EmptyDomain, UnionDomain
+                    testcalculus, testfunctional
 using LinearAlgebra
 using SpecialFunctions
 _factorial(n) = gamma(n+1)

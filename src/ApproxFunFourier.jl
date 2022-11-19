@@ -13,7 +13,7 @@ import ApproxFunBase: Fun, SumSpace, SubSpace, NoSpace, IntervalOrSegment,
             ConcreteConversion, ConcreteMultiplication, ConcreteDerivative,
             MultiplicationWrapper, ConversionWrapper, DerivativeWrapper,
             Evaluation, Conversion, Multiplication,
-            Derivative, bandwidths, ConcreteEvaluation, ConcreteIntegral,
+            Derivative, ConcreteEvaluation, ConcreteIntegral,
             DefiniteLineIntegral, DefiniteIntegral, ConcreteDefiniteIntegral,
             ConcreteDefiniteLineIntegral, IntegralWrapper, Reverse, NegateEven,
             ReverseOrientation, ReverseOrientationWrapper, ReverseWrapper,
@@ -35,6 +35,8 @@ import ApproxFunBase: Fun, SumSpace, SubSpace, NoSpace, IntervalOrSegment,
             reverseeven!, negateeven!, cfstype, alternatesign!, extremal_args,
             hesseneigvals, chebyshev_clenshaw, roots, EmptyDomain,
             chebmult_getindex, components, affine_setdiff, complexroots
+
+import BandedMatrices: bandwidths
 
 import DomainSets: Domain, indomain, UnionDomain, Point, Interval,
             boundary, rightendpoint, leftendpoint

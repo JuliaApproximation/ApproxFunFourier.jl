@@ -1,6 +1,3 @@
-
-
-
 export PeriodicSegment
 
 """
@@ -19,7 +16,7 @@ end
 PeriodicSegment()=PeriodicSegment{Float64}()
 PeriodicSegment(a::Int,b::Int) = PeriodicSegment(Float64(a),Float64(b)) #convenience method
 PeriodicSegment(a,b) = PeriodicSegment{promote_type(typeof(a),typeof(b))}(a,b)
-PeriodicSegment(a::Tuple,b::Tuple) = Interval(Vec(a...),Vec(b...))
+PeriodicSegment(a::Tuple,b::Tuple) = PeriodicSegment(SVector(a), SVector(b))
 
 function convert(::Type{PeriodicSegment}, d::ClosedInterval)
 	a,b = d.left,d.right
@@ -35,7 +32,9 @@ convert(::Type{PeriodicSegment{T}}, d::PeriodicSegment) where {T<:Number} = Peri
 
 isambiguous(d::PeriodicSegment) = all(isnan(leftendpoint(d))) && all(isnan(rightendpoint(d)))
 convert(::Type{PeriodicSegment{T}},::AnyDomain) where {T<:Number} = PeriodicSegment{T}(NaN,NaN)
-convert(::Type{PeriodicSegment{Vec{d,T}}},::AnyDomain) where {d,T} = PeriodicSegment(Vec(fill(NaN,d)...),Vec(fill(NaN,d)...))
+function convert(::Type{PeriodicSegment{SVector{d,T}}},::AnyDomain) where {d,T}
+    PeriodicSegment(SVector{d,T}(ntuple(x->T(NaN),d)), SVector{d,T}(ntuple(x->T(NaN),d)))
+end
 convert(::Type{PeriodicSegment{T}},::AnyDomain) where {T} = PeriodicSegment(nan(T),nan(T))
 PeriodicSegment{T}(d) where T = convert(PeriodicSegment{T}, d)
 PeriodicSegment(d) = convert(PeriodicSegment, d)
@@ -85,7 +84,7 @@ for op in (:*,:+,:-)
 end
 
 
-@eval /(d::PeriodicSegment,c::Number) = PeriodicSegment(/(leftendpoint(d),c),/(rightendpoint(d),c))
+/(d::PeriodicSegment,c::Number) = PeriodicSegment(/(leftendpoint(d),c),/(rightendpoint(d),c))
 
 +(d1::PeriodicSegment,d2::PeriodicSegment) = PeriodicSegment(d1.a+d2.a,d1.b+d2.b)
 
@@ -111,11 +110,11 @@ issubset(a::IntervalOrSegment, b::PeriodicSegment) = PeriodicSegment(endpoints(a
 
 
 boundary(d::VcatDomain{2,<:Any,(1,1),<:Tuple{<:IntervalOrSegment,<:PeriodicSegment}}) =
-    UnionDomain((PeriodicSegment(Vec(rightendpoint(factor(d,1)),leftendpoint(factor(d,2))),Vec(rightendpoint(factor(d,1)),rightendpoint(factor(d,2)))),
-        PeriodicSegment(Vec(leftendpoint(factor(d,1)),rightendpoint(factor(d,2))),Vec(leftendpoint(factor(d,1)),leftendpoint(factor(d,2))))))
+    UnionDomain((PeriodicSegment(SVector(rightendpoint(factor(d,1)),leftendpoint(factor(d,2))),SVector(rightendpoint(factor(d,1)),rightendpoint(factor(d,2)))),
+        PeriodicSegment(SVector(leftendpoint(factor(d,1)),rightendpoint(factor(d,2))),SVector(leftendpoint(factor(d,1)),leftendpoint(factor(d,2))))))
 boundary(d::VcatDomain{2,<:Any,(1,1),<:Tuple{<:PeriodicSegment,<:IntervalOrSegment}}) =
-    UnionDomain((PeriodicSegment(Vec(leftendpoint(factor(d,1)),leftendpoint(factor(d,2))),Vec(rightendpoint(factor(d,1)),leftendpoint(factor(d,2)))),
-        PeriodicSegment(Vec(rightendpoint(factor(d,1)),rightendpoint(factor(d,2))),Vec(leftendpoint(factor(d,1)),rightendpoint(factor(d,2))))))
+    UnionDomain((PeriodicSegment(SVector(leftendpoint(factor(d,1)),leftendpoint(factor(d,2))),SVector(rightendpoint(factor(d,1)),leftendpoint(factor(d,2)))),
+        PeriodicSegment(SVector(rightendpoint(factor(d,1)),rightendpoint(factor(d,2))),SVector(leftendpoint(factor(d,1)),rightendpoint(factor(d,2))))))
 boundary(d::VcatDomain{2,<:Any,(1,1),<:Tuple{<:PeriodicSegment,<:PeriodicSegment}}) = EmptyDomain()
 
 union_rule(A::SumSpace{<:Any,<:PeriodicSegment}, B::Space{<:IntervalOrSegment}) =

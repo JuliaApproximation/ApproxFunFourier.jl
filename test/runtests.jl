@@ -1,12 +1,14 @@
 using ApproxFunFourier
 using ApproxFunBase
-using ApproxFunBase: Block, Vec, EmptyDomain, UnionDomain
+using ApproxFunBase: Block, EmptyDomain, UnionDomain
 using ApproxFunBaseTest: testspace, testtransforms, testmultiplication, testraggedbelowoperator,
                     testbandedoperator, testblockbandedoperator, testbandedblockbandedoperator,
                     testcalculus, testfunctional
 using LinearAlgebra
 using SpecialFunctions
 _factorial(n) = gamma(n+1)
+
+using StaticArrays: SVector
 using Test
 
 using Aqua
@@ -23,13 +25,20 @@ end
     @test -10.0 ∈ PeriodicLine()
     @test -10.0+im ∉ PeriodicLine()
 
-    @test ApproxFunBase.Vec(0,0.5) ∈ PeriodicSegment(ApproxFunBase.Vec(0.0,0), ApproxFunBase.Vec(0,1))
+    @test SVector(0,0.5) ∈ PeriodicSegment(SVector(0.0,0), SVector(0,1))
 
-    @test ApproxFunBase.Vec(1,0) ∈ Circle((0.,0.),1.)
+    @test SVector(1,0) ∈ Circle((0.,0.),1.)
 
     @test ∂(PeriodicSegment() × ChebyshevInterval()) isa UnionDomain
     @test ∂(ChebyshevInterval() × PeriodicSegment()) isa UnionDomain
     @test ∂(PeriodicSegment() × PeriodicSegment()) isa EmptyDomain
+
+    T = PeriodicSegment{SVector{2,Float64}}
+    @test convert(T, ApproxFunBase.AnyDomain()) isa T
+
+    a = PeriodicSegment(0,2π)
+    b = a/2
+    @test rightendpoint(a)/2 ≈ rightendpoint(b)
 end
 
 @testset "Cos/SinSpace" begin
@@ -323,11 +332,11 @@ end
 end
 
 
-@testset "Vec circle" begin
+@testset "SVector circle" begin
     d=Circle((0.,0.),1.)
     f=Fun(xy->exp(-xy[1]-2cos(xy[2])),Fourier(d),40)
     @test f(cos(0.1),sin(0.1)) ≈ exp(-cos(0.1)-2cos(sin(0.1)))
-    @test f(Vec(cos(0.1),sin(0.1))) ≈ exp(-cos(0.1)-2cos(sin(0.1)))
+    @test f(SVector(cos(0.1),sin(0.1))) ≈ exp(-cos(0.1)-2cos(sin(0.1)))
 
     f=Fun((x,y)->exp(-x-2cos(y)),Fourier(d),40)
     @test f(cos(0.1),sin(0.1)) ≈ exp(-cos(0.1)-2cos(sin(0.1)))
@@ -581,7 +590,7 @@ end
 end
 
 @testset "off domain evaluate" begin
-    g = Fun(1, PeriodicSegment(Vec(0,-1) , Vec(π,-1)))
+    g = Fun(1, PeriodicSegment(SVector(0,-1) , SVector(π,-1)))
     @test g(0.1,-1) ≈ 1
     @test g(0.1,1) ≈ 0
 end

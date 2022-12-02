@@ -100,7 +100,7 @@ rangespace(D::ConcreteDerivative{S}) where {S<:SinSpace} = iseven(D.order) ? D.s
 
 function getindex(D::ConcreteDerivative{CS,OT,T},k::Integer,j::Integer) where {CS<:CosSpace,OT,T}
     d=domain(D)
-    m=D.order
+    m=Int(D.order)
     C=convert(T,2/complexlength(d)*π)
 
     if k==j && mod(m,4)==0
@@ -118,7 +118,7 @@ end
 
 function getindex(D::ConcreteDerivative{CS,OT,T},k::Integer,j::Integer) where {CS<:SinSpace,OT,T}
     d=domain(D)
-    m=D.order
+    m=Int(D.order)
     C=convert(T,2/complexlength(d)*π)
 
     if k==j && mod(m,4)==0
@@ -136,13 +136,18 @@ end
 
 
 # Use Laurent derivative
-Derivative(S::Fourier{DD,RR},k::Integer) where {DD<:Circle,RR} =
+function Derivative(S::Fourier{<:Circle}, k::Number)
+    @assert Integer(k) == k "order must be an integer"
     DerivativeWrapper(Derivative(Laurent(S),k)*Conversion(S,Laurent(S)),k)
+end
 
-Integral(::CosSpace,m::Integer) =
-    error("Integral not defined for CosSpace.  Use Integral(CosSpace()|(2:∞)) if first coefficient vanishes.")
+Integral(::CosSpace, m::Number) =
+    error("Integral not defined for CosSpace.  Use Integral(CosSpace()|(2:Infinities.∞)) if first coefficient vanishes.")
 
-Integral(sp::SinSpace{<:PeriodicSegment}, m::Integer) = ConcreteIntegral(sp,m)
+function Integral(sp::SinSpace{<:PeriodicSegment}, m::Number)
+    @assert Integer(m) == m "order must be an integer"
+    ConcreteIntegral(sp,m)
+end
 
 bandwidths(D::ConcreteIntegral{<:SinSpace}) = iseven(D.order) ? (0,0) : (1,0)
 rangespace(D::ConcreteIntegral{<:CosSpace}) = iseven(D.order) ? D.space : SinSpace(domain(D))
@@ -151,7 +156,7 @@ rangespace(D::ConcreteIntegral{<:SinSpace}) = iseven(D.order) ? D.space : CosSpa
 function getindex(D::ConcreteIntegral{CS,OT,T},k::Integer,j::Integer) where {CS<:SinSpace,OT,T}
     d=domain(D)
     @assert isa(d,PeriodicSegment)
-    m=D.order
+    m=Int(D.order)
     C=convert(T,2/complexlength(d)*π)
 
 
@@ -168,7 +173,8 @@ function getindex(D::ConcreteIntegral{CS,OT,T},k::Integer,j::Integer) where {CS<
     end
 end
 
-function Integral(S::SubSpace{<:CosSpace,<:AbstractInfUnitRange{Int},<:PeriodicSegment},k::Integer)
+function Integral(S::SubSpace{<:CosSpace,<:AbstractInfUnitRange{Int},<:PeriodicSegment},k::Number)
+    @assert Integer(k) == k "order must be an integer"
     @assert first(S.indexes)==2
     ConcreteIntegral(S,k)
 end
@@ -181,7 +187,7 @@ rangespace(D::ConcreteIntegral{<:SubSpace{<:CosSpace,<:AbstractInfUnitRange{Int}
 function getindex(D::ConcreteIntegral{<:SubSpace{<:CosSpace,<:AbstractInfUnitRange{Int},<:PeriodicSegment}},
                   k::Integer,j::Integer)
     d=domain(D)
-    m=D.order
+    m=Int(D.order)
     T=eltype(D)
     C=convert(T,2/complexlength(d)*π)
 
@@ -192,7 +198,7 @@ function getindex(D::ConcreteIntegral{<:SubSpace{<:CosSpace,<:AbstractInfUnitRan
         elseif mod(m,4)==2
             -(C*k)^(-m)
         elseif mod(m,4)==1
-        (C*k)^(-m)
+            (C*k)^(-m)
         else   # mod(m,4)==3
             -(C*k)^(-m)
         end

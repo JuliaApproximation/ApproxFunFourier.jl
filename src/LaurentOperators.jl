@@ -67,13 +67,25 @@ coefficienttimes(f::Fun{Laurent{DD,RR}},g::Fun{Laurent{DD,RR}}) where {DD,RR} = 
 ## Derivative
 
 # override map definition
-Derivative(S::Hardy{s,DD},k::Integer) where {s,DD<:Circle} = ConcreteDerivative(S,k)
-Derivative(S::Hardy{s,DD},k::Integer) where {s,DD<:PeriodicSegment} = ConcreteDerivative(S,k)
-Derivative(S::Laurent{DD,RR},k::Integer) where {DD<:Circle,RR} =
-    DerivativeWrapper(InterlaceOperator(Diagonal([map(s->Derivative(s,k),S.spaces)...]),SumSpace),k)
+function Derivative(S::Hardy{<:Any,<:Circle}, k::Number)
+    @assert Integer(k) == k "order must be an integer"
+    ConcreteDerivative(S,k)
+end
+function Derivative(S::Hardy{<:Any,<:PeriodicSegment}, k::Number)
+    @assert Integer(k) == k "order must be an integer"
+    ConcreteDerivative(S,k)
+end
+function Derivative(S::Laurent{<:Circle}, k::Number)
+    @assert Integer(k) == k "order must be an integer"
+    t = map(s->Derivative(s,k), S.spaces)
+    v = convert_vector_or_svector(t)
+    D = Diagonal(v)
+    O = InterlaceOperator(D, SumSpace)
+    DerivativeWrapper(O,k)
+end
 
 bandwidths(D::ConcreteDerivative{Hardy{s,DD,RR}}) where {s,DD<:PeriodicSegment,RR}=(0,0)
-bandwidths(D::ConcreteDerivative{Hardy{s,DD,RR}}) where {s,DD<:Circle,RR}=s ? (0,D.order) : (D.order,0)
+bandwidths(D::ConcreteDerivative{Hardy{s,DD,RR}}) where {s,DD<:Circle,RR}=s ? (-D.order,D.order) : (D.order,-D.order)
 
 rangespace(D::ConcreteDerivative{S}) where {S<:Hardy}=D.space
 

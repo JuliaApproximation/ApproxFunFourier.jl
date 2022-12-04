@@ -137,7 +137,7 @@ end
 
 # Use Laurent derivative
 function Derivative(S::Fourier{<:Circle}, k::Number)
-    @assert Integer(k) == k "order must be an integer"
+    assert_integer(k)
     DerivativeWrapper(Derivative(Laurent(S),k)*Conversion(S,Laurent(S)),k)
 end
 
@@ -145,7 +145,7 @@ Integral(::CosSpace, m::Number) =
     error("Integral not defined for CosSpace.  Use Integral(CosSpace()|(2:Infinities.∞)) if first coefficient vanishes.")
 
 function Integral(sp::SinSpace{<:PeriodicSegment}, m::Number)
-    @assert Integer(m) == m "order must be an integer"
+    assert_integer(m)
     ConcreteIntegral(sp,m)
 end
 

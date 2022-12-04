@@ -68,15 +68,15 @@ coefficienttimes(f::Fun{Laurent{DD,RR}},g::Fun{Laurent{DD,RR}}) where {DD,RR} = 
 
 # override map definition
 function Derivative(S::Hardy{<:Any,<:Circle}, k::Number)
-    @assert Integer(k) == k "order must be an integer"
+    assert_integer(k)
     ConcreteDerivative(S,k)
 end
 function Derivative(S::Hardy{<:Any,<:PeriodicSegment}, k::Number)
-    @assert Integer(k) == k "order must be an integer"
+    assert_integer(k)
     ConcreteDerivative(S,k)
 end
 function Derivative(S::Laurent{<:Circle}, k::Number)
-    @assert Integer(k) == k "order must be an integer"
+    assert_integer(k)
     t = map(s->Derivative(s,k), S.spaces)
     v = convert_vector_or_svector(t)
     D = Diagonal(v)
@@ -149,7 +149,10 @@ getindex(D::ConcreteDerivative{Hardy{false,DD,RR},OT,T},k::Integer,j::Integer) w
 # end
 
 
-Integral(S::Hardy{s,DD,RR},k::Integer) where {s,DD<:Circle,RR} = ConcreteIntegral(S,k)
+function Integral(S::Hardy{s,DD,RR}, k::Number) where {s,DD<:Circle,RR}
+    assert_integer(k)
+    ConcreteIntegral(S,k)
+end
 
 bandwidths(D::ConcreteIntegral{Taylor{DD,RR}}) where {DD<:Circle,RR} = (D.order,0)
 rangespace(Q::ConcreteIntegral{Hardy{s,DD,RR}}) where {s,DD<:Circle,RR} = Q.space
@@ -172,7 +175,8 @@ function getindex(D::ConcreteIntegral{Taylor{DD,RR}},k::Integer,j::Integer) wher
 end
 
 
-function Integral(S::SubSpace{<:Hardy{false,<:Circle}, <:AbstractInfUnitRange{Int}},k::Integer)
+function Integral(S::SubSpace{<:Hardy{false,<:Circle}, <:AbstractInfUnitRange{Int}}, k::Number)
+    assert_integer(k)
     if first(S.indexes) == k+1
         ConcreteIntegral(S,k)
     else

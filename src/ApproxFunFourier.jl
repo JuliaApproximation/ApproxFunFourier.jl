@@ -34,7 +34,8 @@ import ApproxFunBase: Fun, SumSpace, SubSpace, NoSpace, IntervalOrSegment,
             SpaceOperator, ZeroOperator, InterlaceOperator, interlace!,
             reverseeven!, negateeven!, cfstype, alternatesign!, extremal_args,
             hesseneigvals, chebyshev_clenshaw, roots, EmptyDomain,
-            chebmult_getindex, components, affine_setdiff, complexroots
+            chebmult_getindex, components, affine_setdiff, complexroots,
+            assert_integer
 
 import BandedMatrices: bandwidths
 

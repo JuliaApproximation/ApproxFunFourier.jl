@@ -43,6 +43,7 @@ PeriodicSegment(d) = convert(PeriodicSegment, d)
 ## Information
 leftendpoint(d::PeriodicSegment) = d.a
 rightendpoint(d::PeriodicSegment) = d.b
+endpoints(d::PeriodicSegment) = (d.a, d.b)
 
 first(d::PeriodicSegment) = leftendpoint(d)
 

@@ -25,6 +25,11 @@ end
     @test -10.0 ∈ PeriodicLine()
     @test -10.0+im ∉ PeriodicLine()
 
+    p = PeriodicSegment(0,2π)
+    @test leftendpoint(p) == 0
+    @test rightendpoint(p) == 2π
+    @test endpoints(p) == (0, 2π)
+
     @test SVector(0,0.5) ∈ PeriodicSegment(SVector(0.0,0), SVector(0,1))
 
     @test SVector(1,0) ∈ Circle((0.,0.),1.)

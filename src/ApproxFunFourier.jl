@@ -40,7 +40,7 @@ import ApproxFunBase: Fun, SumSpace, SubSpace, NoSpace, IntervalOrSegment,
 import BandedMatrices: bandwidths
 
 import DomainSets: Domain, indomain, UnionDomain, Point, Interval,
-            boundary, rightendpoint, leftendpoint
+            boundary, rightendpoint, leftendpoint, endpoints
 
 import Base: convert, getindex, *, +, -, ==,  /, eltype,
             show, sum, cumsum, conj, issubset, first, last, rand, setdiff,

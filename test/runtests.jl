@@ -13,7 +13,8 @@ using Test
 
 using Aqua
 @testset "Project quality" begin
-    Aqua.test_all(ApproxFunFourier, ambiguities=false)
+    Aqua.test_all(ApproxFunFourier, ambiguities=false,
+        stale_deps=(; ignore=[:ApproxFunBaseTest]))
 end
 
 @testset "Periodic Domains" begin

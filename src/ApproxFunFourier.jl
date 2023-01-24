@@ -46,7 +46,7 @@ import Base: convert, getindex, *, +, -, ==,  /, eltype,
             show, sum, cumsum, conj, issubset, first, last, rand, setdiff,
             angle, isempty, zeros, one, promote_rule, real, imag
 
-import LinearAlgebra: norm, mul!
+import LinearAlgebra: norm, mul!, isdiag
 
 using InfiniteArrays: AbstractInfUnitRange
 

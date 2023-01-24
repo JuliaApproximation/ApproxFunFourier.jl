@@ -88,6 +88,7 @@ getindex(C::ConcreteConversion{Fourier{DD,R1},Fourier{DD,R2},T},k::Integer,j::In
 
 function Derivative(S::Union{CosSpace,SinSpace},order)
     @assert isa(domain(S),PeriodicSegment)
+    @assert order > 0 "order of derivative must be > 0"
     ConcreteDerivative(S,order)
 end
 
@@ -138,6 +139,7 @@ end
 # Use Laurent derivative
 function Derivative(S::Fourier{<:Circle}, k::Number)
     assert_integer(k)
+    @assert k > 0 "order of derivative must be > 0"
     DerivativeWrapper(Derivative(Laurent(S),k)*Conversion(S,Laurent(S)),k)
 end
 
@@ -146,6 +148,7 @@ Integral(::CosSpace, m::Number) =
 
 function Integral(sp::SinSpace{<:PeriodicSegment}, m::Number)
     assert_integer(m)
+    @assert m > 0 "order of integral must be > 0"
     ConcreteIntegral(sp,m)
 end
 
@@ -174,7 +177,8 @@ function getindex(D::ConcreteIntegral{CS,OT,T},k::Integer,j::Integer) where {CS<
 end
 
 function Integral(S::SubSpace{<:CosSpace,<:AbstractInfUnitRange{Int},<:PeriodicSegment},k::Number)
-    @assert Integer(k) == k "order must be an integer"
+    assert_integer(k)
+    @assert k > 0 "order of integral must be > 0"
     @assert first(S.indexes)==2
     ConcreteIntegral(S,k)
 end

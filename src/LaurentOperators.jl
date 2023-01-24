@@ -69,14 +69,17 @@ coefficienttimes(f::Fun{Laurent{DD,RR}},g::Fun{Laurent{DD,RR}}) where {DD,RR} = 
 # override map definition
 function Derivative(S::Hardy{<:Any,<:Circle}, k::Number)
     assert_integer(k)
+    @assert k > 0 " order of derivative must be > 0"
     ConcreteDerivative(S,k)
 end
 function Derivative(S::Hardy{<:Any,<:PeriodicSegment}, k::Number)
     assert_integer(k)
+    @assert k > 0 " order of derivative must be > 0"
     ConcreteDerivative(S,k)
 end
 function Derivative(S::Laurent{<:Circle}, k::Number)
     assert_integer(k)
+    @assert k > 0 " order of derivative must be > 0"
     t = map(s->Derivative(s,k), S.spaces)
     v = convert_vector_or_svector(t)
     D = Diagonal(v)
@@ -85,7 +88,8 @@ function Derivative(S::Laurent{<:Circle}, k::Number)
 end
 
 bandwidths(D::ConcreteDerivative{Hardy{s,DD,RR}}) where {s,DD<:PeriodicSegment,RR}=(0,0)
-bandwidths(D::ConcreteDerivative{Hardy{s,DD,RR}}) where {s,DD<:Circle,RR}=s ? (-D.order,D.order) : (D.order,-D.order)
+bandwidths(D::ConcreteDerivative{Hardy{s,DD,RR}}) where {s,DD<:Circle,RR} = s ? (-D.order,D.order) : (D.order,-D.order)
+isdiag(D::ConcreteDerivative{Hardy{s,DD,RR}}) where {s,DD<:Circle,RR} = false
 
 rangespace(D::ConcreteDerivative{S}) where {S<:Hardy}=D.space
 
@@ -151,10 +155,12 @@ getindex(D::ConcreteDerivative{Hardy{false,DD,RR},OT,T},k::Integer,j::Integer) w
 
 function Integral(S::Hardy{s,DD,RR}, k::Number) where {s,DD<:Circle,RR}
     assert_integer(k)
+    @assert k > 0 "order of integral must be > 0"
     ConcreteIntegral(S,k)
 end
 
 bandwidths(D::ConcreteIntegral{Taylor{DD,RR}}) where {DD<:Circle,RR} = (D.order,0)
+isdiag(D::ConcreteIntegral{Taylor{DD,RR}}) where {DD<:Circle,RR} = false
 rangespace(Q::ConcreteIntegral{Hardy{s,DD,RR}}) where {s,DD<:Circle,RR} = Q.space
 
 function getindex(D::ConcreteIntegral{Taylor{DD,RR}},k::Integer,j::Integer) where {DD<:Circle,RR}
@@ -177,6 +183,7 @@ end
 
 function Integral(S::SubSpace{<:Hardy{false,<:Circle}, <:AbstractInfUnitRange{Int}}, k::Number)
     assert_integer(k)
+    @assert k > 0 "order of integral must be > 0"
     if first(S.indexes) == k+1
         ConcreteIntegral(S,k)
     else

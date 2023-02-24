@@ -17,7 +17,7 @@ StaticArrays = "90137ffa-7385-5640-81b9-e52037218182"
 
 [compat]
 AbstractFFTs = "0.5, 1"
-ApproxFunBase = "0.7.54"
+ApproxFunBase = "0.7.54, 0.8"
 ApproxFunBaseTest = "0.1"
 Aqua = "0.5"
 BandedMatrices = "0.16, 0.17"

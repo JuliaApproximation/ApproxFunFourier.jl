@@ -57,23 +57,24 @@ function tocanonical(d::Circle{T},ζ) where T<:SVector
 	_tocanonical(v)
 end
 
+orientationsign(d::Circle) = d.orientation ? 1 : -1
 
 fromcanonical(d::Circle{T,V,Complex{V}},θ) where {T<:Number,V<:Real} =
-	d.radius*exp((d.orientation ? 1 : -1)*1.0im*θ) + d.center
+	d.radius * cis(orientationsign(d) * θ) + d.center
 fromcanonicalD(d::Circle{T},θ) where {T<:Number} =
-	(d.orientation ? 1 : -1)*d.radius*1.0im*exp((d.orientation ? 1 : -1)*1.0im*θ)
+	orientationsign(d) * d.radius * 1.0im * cis(orientationsign(d) * θ)
 
 
 fromcanonical(d::Circle{T},θ::Number) where {T<:SVector} =
-	d.radius*SVector(cos((d.orientation ? 1 : -1)*θ),sin((d.orientation ? 1 : -1)*θ)) + d.center
+	d.radius*SVector(cos(orientationsign(d)*θ),sin(orientationsign(d)*θ)) + d.center
 fromcanonicalD(d::Circle{T},θ::Number) where {T<:SVector} =
-	d.radius*(d.orientation ? 1 : -1)*SVector(-sin((d.orientation ? 1 : -1)*θ),cos((d.orientation ? 1 : -1)*θ))
+	d.radius*orientationsign(d)*SVector(-sin(orientationsign(d)*θ),cos(orientationsign(d)*θ))
 
 
 indomain(z,d::Circle) = norm(z-d.center) ≈ d.radius
 
 arclength(d::Circle) = 2π*d.radius
-complexlength(d::Circle) = (d.orientation ? 1 : -1)*im*arclength(d)  #TODO: why?
+complexlength(d::Circle) = orientationsign(d)*im*arclength(d)  #TODO: why?
 
 
 ==(d::Circle,m::Circle) = d.center == m.center && d.radius == m.radius && d.orientation == m.orientation

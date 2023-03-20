@@ -140,7 +140,9 @@ end
 function Derivative(S::Fourier{<:Circle}, k::Number)
     assert_integer(k)
     @assert k > 0 "order of derivative must be > 0"
-    DerivativeWrapper(Derivative(Laurent(S),k)*Conversion(S,Laurent(S)),k)
+    DerivOp = Derivative(Laurent(S),k)
+    ConvertOp = Conversion(S,Laurent(S))
+    DerivativeWrapper(DerivOp * ConvertOp, k, S, rangespace(DerivOp))
 end
 
 Integral(::CosSpace, m::Number) =

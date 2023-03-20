@@ -189,7 +189,9 @@ function Integral(S::SubSpace{<:Hardy{false,<:Circle}, <:AbstractInfUnitRange{In
     else
         @assert first(S.index) > k+1
         S2=S.space|(k+1:∞)
-        IntegralWrapper(ConcreteIntegral(S2,k)*Converion(S,S2),k)
+        Integralop = ConcreteIntegral(S2,k)
+        ConvertOp = Converion(S,S2)
+        IntegralWrapper(Integralop * ConvertOp, k, S, rangespace(Integralop))
     end
 end
 

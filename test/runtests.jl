@@ -212,7 +212,7 @@ end
     @test B*Fun(sin,domainspace(B)) ≈ 1.0
 
     ## Diagonal Derivative
-    D = Derivative(Laurent())
+    D = @inferred Derivative(Laurent())
     @test isdiag(D)
 end
 
@@ -289,6 +289,8 @@ end
     ## Test bug in multiplication
     y = Fun(Circle())
     @test (y^2) ≈ Fun(z->z^2,domain(y))
+
+    @inferred Derivative(Laurent(Circle()))
 end
 
 

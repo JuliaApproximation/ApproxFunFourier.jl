@@ -60,9 +60,9 @@ end
 orientationsign(d::Circle) = d.orientation ? 1 : -1
 
 fromcanonical(d::Circle{T,V,Complex{V}},θ) where {T<:Number,V<:Real} =
-	d.radius * cis(orientationsign(d) * θ) + d.center
+	d.radius * exp(orientationsign(d) * 1.0im * θ) + d.center
 fromcanonicalD(d::Circle{T},θ) where {T<:Number} =
-	orientationsign(d) * d.radius * 1.0im * cis(orientationsign(d) * θ)
+	orientationsign(d) * d.radius * 1.0im * exp(orientationsign(d) * 1.0im * θ)
 
 
 fromcanonical(d::Circle{T},θ::Number) where {T<:SVector} =

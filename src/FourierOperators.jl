@@ -84,10 +84,9 @@ getindex(C::ConcreteConversion{Fourier{DD,R1},Fourier{DD,R2},T},k::Integer,j::In
 
 
 ### Cos/Sine
-
-
-function Derivative(S::Union{CosSpace,SinSpace},order)
-    @assert isa(domain(S),PeriodicSegment)
+function Derivative(S::Union{CosSpace,SinSpace}, order::Number)
+    assert_integer(order)
+    @assert isa(domain(S), PeriodicSegment)
     @assert order > 0 "order of derivative must be > 0"
     ConcreteDerivative(S,order)
 end

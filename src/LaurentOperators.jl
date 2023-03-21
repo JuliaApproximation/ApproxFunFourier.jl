@@ -81,9 +81,7 @@ function Derivative(S::Laurent{<:Circle}, k::Number)
     assert_integer(k)
     @assert k > 0 " order of derivative must be > 0"
     t = map(s->Derivative(s,k), S.spaces)
-    v = convert_vector_or_svector(t)
-    D = Diagonal(v)
-    O = InterlaceOperator(D, SumSpace)
+    O = InterlaceOperator_Diagonal(t, S)
     DerivativeWrapper(O,k)
 end
 

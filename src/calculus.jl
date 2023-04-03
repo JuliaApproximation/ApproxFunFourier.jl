@@ -68,20 +68,25 @@ linesum(f::Fun{CosSpace{DD,RR}}) where {DD<:PeriodicSegment,RR} =
 
 
 function integrate(f::Fun{CS}) where CS<:CosSpace
-    if isa(domain(f),Circle)
-        error("Integrate not implemented for CosSpace on Circle")
-    else  # Probably periodic itnerval, drop constant term if zero
+    d = domain(f)
+    tinf = if d isa Circle
+        throw(ArgumentError("Integrate not implemented for CosSpace on Circle"))
+    else  # Probably periodic interval, drop constant term if zero
         tol=1E-14 #TODO: smart tolerance.  Here relative is a bit tricky
                   # since this is called by Fourier integrate
-        if abs(f.coefficients[1])<tol
+        if isempty(f.coefficients) || abs(f.coefficients[1])<tol
             integrate(Fun(f,space(f)|(2:∞)))
-        else
-            d=domain(f)
-            @assert isa(d,PeriodicSegment)
+        elseif d isa PeriodicSegment
             x=Fun(identity, Interval(d))
-            (f.coefficients[1]*x)⊕integrate(Fun(f,space(f)|(2:∞)))
+            fconstant = (f.coefficients[1]*x)
+            fperiodic = integrate(Fun(f,space(f)|(2:∞)))
+            SS = SumSpace(space(fconstant), space(fperiodic))
+            Fun(SS, ApproxFunBase.interlace(coefficients(fconstant), coefficients(fperiodic)))
+        else
+            throw(ArgumentError("not implemented"))
         end
     end
+    chop(tinf)
 end
 
 function integrate(f::Fun{SS}) where SS<:SinSpace
@@ -98,9 +103,13 @@ for OP in (:differentiate,:integrate)
     @eval $OP(f::Fun{Fourier{D,R},T}) where {T,D<:Circle,R} = $OP(Fun(f,Laurent))
 end
 
-integrate(f::Fun{Fourier{D,R},T}) where {T,D<:PeriodicSegment,R} =
-    integrate(component(f,2))⊕integrate(component(f,1))
-
+function integrate(f::Fun{Fourier{D,R},T}) where {T,D<:PeriodicSegment,R}
+    g1 = integrate(component(f,2))
+    g2 = integrate(component(f,1))
+    # g1 ⊕ g2, but we construct the space directly to improve type-stability
+    SS = SumSpace(space(g1), space(g2))
+    Fun(SS, ApproxFunBase.interlace(coefficients(g1), coefficients(g2)))
+end
 
 
 

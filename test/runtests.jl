@@ -299,6 +299,7 @@ end
                 Fun(θ->sin(sin(θ)),Fourier()),Fun(θ->cos(θ)+cos(3θ),CosSpace()))
         @test norm(integrate(f)'-f)<10eps()
     end
+    @test iszero(integrate(Fun(CosSpace(), Float64[])))
 end
 
 

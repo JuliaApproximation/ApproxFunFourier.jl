@@ -1,6 +1,6 @@
 name = "ApproxFunFourier"
 uuid = "59844689-9c9d-51bf-9583-5b794ec66d30"
-version = "0.3.15"
+version = "0.3.16"
 
 [deps]
 AbstractFFTs = "621f4979-c628-5d54-868e-fcf4e3e8185c"

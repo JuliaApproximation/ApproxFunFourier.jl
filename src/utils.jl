@@ -1,6 +1,7 @@
 # diff from CosSpace -> SinSpace
 
 function cosspacediff(v::AbstractVector{T}) where T<:Number
+    Base.require_one_based_indexing(v)
     if length(v)==1
         w = zeros(T,1)
     else
@@ -16,6 +17,7 @@ end
 # diff from SinSpace -> CosSpace
 
 function sinspacediff(v::AbstractVector{T}) where T<:Number
+    Base.require_one_based_indexing(v)
     w = Array{T}(undef, length(v)+1)
     w[1] = zero(T)
     for k=1:length(v)
@@ -28,6 +30,7 @@ end
 # diff from Fourier -> Fourier
 
 function fourierdiff(v::AbstractVector{T}) where T<:Number
+    Base.require_one_based_indexing(v)
     n = 2(length(v)÷2)+1
     w = Array{T}(undef, n)
     w[1] = zero(T)
@@ -44,8 +47,9 @@ end
 # diff from Taylor -> Taylor
 
 function taylor_diff(v::AbstractVector{T}) where T<:Number
+    Base.require_one_based_indexing(v)
     w = Array{T}(undef, length(v))
-    for k=1:length(v)
+    for k in eachindex(v, w)
         @inbounds w[k] = (k-1)*v[k]
     end
 
@@ -55,8 +59,9 @@ end
 # diff from Hardy{false} -> Hardy{false}
 
 function hardyfalse_diff(v::AbstractVector{T}) where T<:Number
+    Base.require_one_based_indexing(v)
     w = Array{T}(undef, length(v))
-    for k=1:length(v)
+    for k in eachindex(v, w)
         @inbounds w[k] = -k*v[k]
     end
 
@@ -66,10 +71,10 @@ end
 # diff from Laurent -> Laurent
 
 function laurentdiff(v::AbstractVector{T}) where T<:Number
+    Base.require_one_based_indexing(v)
     n = length(v)
     w = Array{T}(undef, n)
     w[1] = zero(T)
-    n=length(v)
 
     for k=1:(isodd(n) ? n÷2 : n÷2-1)
         @inbounds w[2k] = -k*v[2k]

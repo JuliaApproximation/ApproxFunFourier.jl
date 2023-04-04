@@ -19,6 +19,7 @@ StaticArrays = "90137ffa-7385-5640-81b9-e52037218182"
 AbstractFFTs = "0.5, 1"
 ApproxFunBase = "0.8.6"
 ApproxFunBaseTest = "0.1"
+ApproxFunOrthogonalPolynomials = "0.6"
 Aqua = "0.5"
 BandedMatrices = "0.16, 0.17"
 DomainSets = "0.3, 0.4, 0.5, 0.6"
@@ -33,9 +34,10 @@ julia = "1.6"
 
 [extras]
 ApproxFunBaseTest = "a931bfaf-0cfd-4a5c-b69c-bf2eed002b43"
+ApproxFunOrthogonalPolynomials = "b70543e2-c0d9-56b8-a290-0d4d6d4de211"
 Aqua = "4c88cf16-eb10-579e-8560-4a9242c79595"
 SpecialFunctions = "276daf66-3868-5448-9aa4-cd146d93841b"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 
 [targets]
-test = ["ApproxFunBaseTest", "Aqua", "Test", "SpecialFunctions"]
+test = ["ApproxFunBaseTest", "ApproxFunOrthogonalPolynomials", "Aqua", "Test", "SpecialFunctions"]

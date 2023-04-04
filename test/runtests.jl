@@ -4,6 +4,7 @@ using ApproxFunBase: Block, EmptyDomain, UnionDomain
 using ApproxFunBaseTest: testspace, testtransforms, testmultiplication, testraggedbelowoperator,
                     testbandedoperator, testblockbandedoperator, testbandedblockbandedoperator,
                     testcalculus, testfunctional
+using ApproxFunOrthogonalPolynomials
 using LinearAlgebra
 using SpecialFunctions
 _factorial(n) = gamma(n+1)
@@ -299,6 +300,12 @@ end
                 Fun(θ->sin(sin(θ)),Fourier()),Fun(θ->cos(θ)+cos(3θ),CosSpace()))
         @test norm(integrate(f)'-f)<10eps()
     end
+    @test iszero(integrate(Fun(CosSpace(), Float64[])))
+    f = Fun(θ->1+cos(θ), CosSpace())
+    g = integrate(f)
+    θ = 0.4
+    @test g(θ) ≈ θ + sin(θ)
+    @test Fun(g', space(f)) ≈ f
 end
 
 

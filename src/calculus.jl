@@ -81,7 +81,7 @@ function integrate(f::Fun{CS}) where CS<:CosSpace
             fconstant = (f.coefficients[1]*x)
             fperiodic = integrate(Fun(f,space(f)|(2:∞)))
             SS = SumSpace(space(fconstant), space(fperiodic))
-            Fun(SS, ApproxFunBase.interlace(coefficients(fconstant), coefficients(fperiodic)))
+            Fun(SS, interlace(coefficients(fconstant), coefficients(fperiodic)))
         else
             throw(ArgumentError("not implemented"))
         end
@@ -107,8 +107,11 @@ function integrate(f::Fun{Fourier{D,R},T}) where {T,D<:PeriodicSegment,R}
     g1 = integrate(component(f,2))
     g2 = integrate(component(f,1))
     # g1 ⊕ g2, but we construct the space directly to improve type-stability
-    SS = SumSpace(space(g1), space(g2))
-    Fun(SS, ApproxFunBase.interlace(coefficients(g1), coefficients(g2)))
+    S1 = space(g1)
+    S2 = space(g2)
+    SS = SumSpace(S1, S2)
+    nc = map(ncomponents, (S1,S2))
+    Fun(SS, interlace(coefficients(g1), coefficients(g2), nc))
 end
 
 

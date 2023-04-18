@@ -39,6 +39,7 @@ import ApproxFunBase: Fun, SumSpace, SubSpace, NoSpace, IntervalOrSegment,
 
 import BandedMatrices: bandwidths
 
+using DomainSets
 import DomainSets: Domain, indomain, UnionDomain, Point, Interval,
             boundary, rightendpoint, leftendpoint, endpoints
 

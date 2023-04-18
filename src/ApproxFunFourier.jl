@@ -42,17 +42,13 @@ import BandedMatrices: bandwidths
 import DomainSets: Domain, indomain, UnionDomain, Point, Interval,
             boundary, rightendpoint, leftendpoint, endpoints
 
-import Base: values, convert, getindex, setindex!, *, +, -, ==, <, <=, >, |, !, !=, eltype, iterate,
-                >=, /, ^, \, ∪, transpose, size, tail, broadcast, broadcast!, copyto!, copy, to_index, (:),
-                similar, map, vcat, hcat, hvcat, show, summary, stride, sum, cumsum, conj, inv,
-                complex, reverse, exp, sqrt, abs, abs2, sign, issubset, in, first, last, rand, intersect, setdiff,
-                isless, union, angle, join, isnan, isapprox, isempty, sort, merge,
-                minimum, maximum, extrema, argmax, argmin, findmax, findmin, isfinite,
-                zeros, zero, one, promote_rule, repeat, length, resize!, isinf,
-                getproperty, findfirst, unsafe_getindex, fld, cld, div, real, imag,
-                @_inline_meta, eachindex, firstindex, lastindex, keys, isreal, OneTo,
-                Array, Vector, Matrix, view, ones, @propagate_inbounds, print_array,
-                split
+import Base: convert, getindex, *, +, -, ==, <, >, |, !, !=, eltype,
+                >=, /, ^, \, size, copyto!, copy, (:),
+                map, show, summary, sum, cumsum, conj, inv,
+                complex, reverse, exp, sqrt, abs, abs2, sign, issubset, in, first, last, rand, setdiff,
+                union, angle, isnan, isapprox, isempty, sort,
+                isfinite, zeros, zero, one, promote_rule, length, isinf,
+                div, real, imag, eachindex, isreal, Array, Vector, Matrix, view, ones
 
 import LinearAlgebra: norm, mul!, isdiag
 

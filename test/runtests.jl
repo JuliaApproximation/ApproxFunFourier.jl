@@ -7,6 +7,7 @@ using ApproxFunBaseTest: testspace, testtransforms, testmultiplication, testragg
 using ApproxFunOrthogonalPolynomials
 using LinearAlgebra
 using SpecialFunctions
+using DomainSets
 _factorial(n) = gamma(n+1)
 
 using StaticArrays: SVector
@@ -294,6 +295,15 @@ end
     @inferred Derivative(Laurent(Circle()))
 end
 
+@testset "Disk" begin
+    d = Disk(ApproxFunBase.AnyDomain())
+    @test ApproxFunBase.isambiguous(d)
+    @test center(𝔻) == [0,0]
+    @test radius(𝔻) == 1
+    d = Disk(2, (2,2))
+    @test ApproxFunBase.fromcanonical(d, [2,2]) == [6,6]
+    @test ApproxFunBase.tocanonical(d, [6,6]) == [2,2]
+end
 
 @testset "Calculus" begin
     for f in (Fun(θ->sin(sin(θ)),SinSpace()),Fun(θ->cos(θ)+cos(3θ),CosSpace()),

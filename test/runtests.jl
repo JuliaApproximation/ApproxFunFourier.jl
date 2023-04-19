@@ -209,9 +209,9 @@ end
         f1 = Fun(sin, Fourier(0..2pi));
         f2 = Fun(x->sin((2/3)x), Fourier(0..3pi));
         g = f1 + f2
+        pts = [0:6;]*pi
         @test g.(pts) ≈ f1.(pts) .+ f2.(pts)
         h = Fun(x-> sin(x)+sin(2*x/3),Fourier(0..6pi))
-        pts = [0:6;]*pi
         @test g.(pts) ≈ h.(pts)
 
         f1 = Fun(x->sin(2x), Fourier(pi..2pi))

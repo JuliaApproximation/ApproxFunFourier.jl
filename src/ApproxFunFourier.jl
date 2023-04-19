@@ -45,7 +45,7 @@ import DomainSets: Domain, indomain, UnionDomain, Point, Interval,
 
 import Base: convert, getindex, *, +, -, ==, /, eltype,
             show, sum, conj, issubset, first, last, rand, setdiff,
-            union, angle, isempty, one, promote_rule, real, imag
+            angle, isempty, one, promote_rule, real, imag
 
 import LinearAlgebra: norm, mul!, isdiag
 

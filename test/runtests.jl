@@ -220,6 +220,13 @@ end
         g = f1 + f2
         pts = [0:5;]*pi
         @test g.(pts) ≈ f1.(pts) .+ f2.(pts)
+
+        @testset "other spaces" begin
+            for S in Any[CosSpace, SinSpace, Fourier, Laurent]
+                @test union(S(0..pi), S(0..2pi)) == S(0..2pi)
+                @test union(S(0..2pi), S(0..3pi)) == S(0..6pi)
+            end
+        end
     end
 
     @testset "coeff conversion" begin

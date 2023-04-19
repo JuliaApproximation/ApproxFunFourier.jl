@@ -189,13 +189,61 @@ end
     @test norm(ApproxFunBase.Reverse(Fourier())*Fun(t->cos(cos(t-0.2)-0.1),Fourier()) - Fun(t->cos(cos(-t-0.2)-0.1),Fourier())) < 10eps()
     @test norm(ApproxFunBase.ReverseOrientation(Fourier())*Fun(t->cos(cos(t-0.2)-0.1),Fourier()) - Fun(t->cos(cos(t-0.2)-0.1),Fourier(PeriodicSegment(2π,0)))) < 10eps()
 
-    @testset "issue #741" begin
+    @testset "ApproxFun issue #741" begin
         c = Fun(cos, Fourier())
         @test roots(c) ≈ (1:2:3) * pi/2
         c = Fun(cos, Fourier(0..4pi))
         @test roots(c) ≈ (1:2:7) * pi/2
         c = Fun(cos, Fourier(-2pi..2pi))
         @test roots(c) ≈ (-3:2:3) * pi/2
+    end
+
+    @testset "ApproxFun issue #768" begin
+        s1 = Fourier(0..pi)
+        f1 = Fun(t -> sin(2*t),s1)
+        @testset for d2 in [0..2pi, 0..3pi]
+            s2 = Fourier(d2)
+            f2 = Fun(t -> sin(2*t),s2)
+            g = f1 + f2
+            @test g(pi/3) ≈ f1(pi/3) + f2(pi/3)
+        end
+        f1 = Fun(sin, Fourier(0..2pi));
+        f2 = Fun(x->sin((2/3)x), Fourier(0..3pi));
+        g = f1 + f2
+        pts = [0:6;]*pi
+        @test g.(pts) ≈ f1.(pts) .+ f2.(pts)
+        h = Fun(x-> sin(x)+sin(2*x/3),Fourier(0..6pi))
+        @test g.(pts) ≈ h.(pts)
+
+        f1 = Fun(x->sin(2x), Fourier(pi..2pi))
+        f2 = Fun(x->sin(2x), Fourier(3pi..4pi))
+        g = f1 + f2
+        pts = [0:5;]*pi
+        @test g.(pts) ≈ f1.(pts) .+ f2.(pts)
+    end
+
+    @testset "coeff conversion" begin
+        f = t->1+2sin(t)+3cos(t)
+        f1 = Fun(f, Fourier(0..2pi))
+
+        f2 = Fun(f, Fourier(0..4pi))
+        @test coefficients(coefficients(f1), space(f1), space(f2)) ≈ coefficients(f2)
+
+        f3 = Fun(f, Fourier(0..8pi))
+        @test coefficients(coefficients(f1), space(f1), space(f3)) ≈ coefficients(f3)
+
+        @test coefficients([1,0,0,2,3], Fourier(0..4pi), Fourier(0..2pi)) ≈ [1,2,3]
+        @test coefficients([1,2,3], Fourier(0..2pi), Fourier(0..4pi)) ≈ [1; zeros(2); [2,3]]
+        @test coefficients([1; zeros(2); [2,3]], Fourier(0..4pi), Fourier(0..2pi)) ≈ [1,2,3]
+        @test coefficients([4,1], Fourier(0..2pi), Fourier(0..4pi)) ≈ [4; zeros(2); 1]
+        @test coefficients([4,1], Fourier(0..2pi), Fourier(0..8pi)) ≈ [4; zeros(6); 1]
+        @test coefficients([4,1,2], Fourier(0..2pi), Fourier(0..4pi)) ≈ [4; zeros(2); [1, 2]]
+        @test coefficients([4,1,2], Fourier(0..2pi), Fourier(0..8pi)) ≈ [4; zeros(6); [1, 2]]
+        @test coefficients([4,1,2,3], Fourier(0..2pi), Fourier(0..4pi)) ≈ [4; zeros(2); [1, 2]; zeros(2); 3]
+        @test coefficients([4,1,2,3], Fourier(0..2pi), Fourier(0..6pi)) ≈ [4; zeros(4); [1, 2]; zeros(4); 3]
+        @test coefficients([4,1,2,3], Fourier(0..2pi), Fourier(0..8pi)) ≈ [4; zeros(6); [1, 2]; zeros(6); 3]
+        @test coefficients([4; zeros(4); [1, 2]; zeros(4); 3], Fourier(0..6pi), Fourier(0..2pi)) ≈ [4,1,2,3]
+        @test coefficients([4; zeros(6); [1, 2]; zeros(6); 3], Fourier(0..8pi), Fourier(0..2pi)) ≈ [4,1,2,3]
     end
 end
 

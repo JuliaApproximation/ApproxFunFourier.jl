@@ -43,9 +43,9 @@ using DomainSets
 import DomainSets: Domain, indomain, UnionDomain, Point, Interval,
             boundary, rightendpoint, leftendpoint, endpoints
 
-import Base: convert, getindex, *, +, -, ==,  /, eltype,
-            show, sum, cumsum, conj, issubset, first, last, rand, setdiff,
-            angle, isempty, zeros, one, promote_rule, real, imag
+import Base: convert, getindex, *, +, -, ==, /, eltype,
+            show, sum, conj, issubset, first, last, rand, setdiff,
+            union, angle, isempty, one, promote_rule, real, imag
 
 import LinearAlgebra: norm, mul!, isdiag
 
@@ -531,6 +531,74 @@ canonicalspace(S::Laurent{DD,RR}) where {DD<:PeriodicSegment,RR} = Fourier(domai
 canonicalspace(S::Fourier{DD,RR}) where {DD<:Circle,RR} = Laurent(domain(S))
 canonicalspace(S::Laurent{DD,RR}) where {DD<:PeriodicLine,RR} = S
 
+# avoid cyclic recursion between CosSpace and Fourier
+# check if one domain is a multiple of another
+# return the multiple
+period(F::Fourier) = period(domain(F))
+function period(A::Domain)
+    la, ra = leftendpoint(A), rightendpoint(A)
+    ra - la
+end
+function domainsmultiple(A::Domain, B::Domain)
+    isapprox(A, B) && return 1
+    la, ra = leftendpoint(A), rightendpoint(A)
+    lb, rb = leftendpoint(B), rightendpoint(B)
+    pa = ra - la
+    pb = rb - lb
+    dmin, dmax = minmax(pa, pb)
+    T = promote_type(eltype(A), eltype(B))
+    if isapprox(mod(dmax, dmin), 0, atol=eps(T)) && isapprox(la, lb, atol=eps(T)) || isapprox(ra, rb, atol=eps(T))
+        return round(Int, dmax/dmin, RoundNearest)
+    end
+    return nothing
+end
+domainsmultiple(A::Space, B::Space) = domainsmultiple(map(domain, (A,B))...)
+# check if one domain may be scaled to obtain the other
+function domainsscaled(A::Domain, B::Domain)
+    la, ra = leftendpoint(A), rightendpoint(A)
+    lb, rb = leftendpoint(B), rightendpoint(B)
+    pa = ra - la
+    pb = rb - lb
+    dmin, dmax = minmax(pa, pb)
+    T = promote_type(eltype(A), eltype(B))
+    if isapprox(la, lb, atol=eps(T)) || isapprox(ra, rb, atol=eps(T))
+        return Rational(dmax/dmin)
+    end
+    return nothing
+end
+domainsscaled(A::Space, B::Space) = domainsscaled(map(domain, (A,B))...)
+function union(A::Fourier, B::Fourier)
+    dA, dB = map(domain, (A,B))
+    AB = domainsmultiple(dA, dB)
+    isnothing(AB) || return Fourier(max(dA, dB))
+    scale = domainsscaled(dA, dB)
+    isnothing(scale) || return Fourier(max(dA, dB) * denominator(scale))
+    SumSpace(A, B)
+end
+_ind(i, n) = 2n * div(i, 2) + isodd(i)
+_invind(i, n) = 2div(i - isodd(i), 2n) + isodd(i)
+function coefficients(v::AbstractVector, A::Fourier, B::Fourier)
+    n = domainsmultiple(A, B)
+    isnothing(n) && error("spaces are not compatible")
+    n == 1 && return copy(v)
+    if period(A) < period(B)
+        v2 = zeros(eltype(v), _ind(length(v), n))
+        for (i, vi) in enumerate(v)
+            v2[_ind(i, n)] = vi
+        end
+    else
+        for (ind, vi) in enumerate(v)
+            if isodd(div(ind, n)) && !isapprox(vi, 0, atol=eps(eltype(vi)))
+                throw(ArgumentError("coefficients incompatible with space conversion"))
+            end
+        end
+        v2 = zeros(eltype(v), _invind(length(v), n))
+        for i in eachindex(v2)
+            v2[i] = v[_ind(i, n)]
+        end
+    end
+    return v2
+end
 
 ## Ones and zeros
 

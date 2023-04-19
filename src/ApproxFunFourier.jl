@@ -45,7 +45,7 @@ import DomainSets: Domain, indomain, UnionDomain, Point, Interval,
 
 import Base: convert, getindex, *, +, -, ==, /, eltype,
             show, sum, conj, issubset, first, last, rand, setdiff,
-            union, angle, isempty, one, promote_rule, real, imag
+            angle, isempty, one, promote_rule, real, imag
 
 import LinearAlgebra: norm, mul!, isdiag
 
@@ -567,13 +567,15 @@ function domainsscaled(A::Domain, B::Domain)
     return nothing
 end
 domainsscaled(A::Space, B::Space) = domainsscaled(map(domain, (A,B))...)
-function union(A::Fourier, B::Fourier)
-    dA, dB = map(domain, (A,B))
-    AB = domainsmultiple(dA, dB)
-    isnothing(AB) || return Fourier(max(dA, dB))
-    scale = domainsscaled(dA, dB)
-    isnothing(scale) || return Fourier(max(dA, dB) * denominator(scale))
-    SumSpace(A, B)
+for S in [:CosSpace, :SinSpace, :Fourier, :Laurent]
+    @eval function union_rule(A::$S{<:PeriodicSegment}, B::$S{<:PeriodicSegment})
+        dA, dB = map(domain, (A,B))
+        AB = domainsmultiple(dA, dB)
+        isnothing(AB) || return $S(max(dA, dB))
+        scale = domainsscaled(dA, dB)
+        isnothing(scale) || return $S(max(dA, dB) * denominator(scale))
+        SumSpace(A, B)
+    end
 end
 _ind(i, n) = 2n * div(i, 2) + isodd(i)
 _invind(i, n) = 2div(i - isodd(i), 2n) + isodd(i)

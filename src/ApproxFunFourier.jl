@@ -42,13 +42,9 @@ import BandedMatrices: bandwidths
 import DomainSets: Domain, indomain, UnionDomain, Point, Interval,
             boundary, rightendpoint, leftendpoint, endpoints
 
-import Base: convert, getindex, *, +, -, ==, <, >, |, !, !=, eltype,
-                >=, /, ^, \, size, copyto!, copy, (:),
-                map, show, summary, sum, cumsum, conj, inv,
-                complex, reverse, exp, sqrt, abs, abs2, sign, issubset, in, first, last, rand, setdiff,
-                union, angle, isnan, isapprox, isempty, sort,
-                isfinite, zeros, zero, one, promote_rule, length, isinf,
-                div, real, imag, eachindex, isreal, Array, Vector, Matrix, view, ones
+import Base: convert, getindex, *, +, -, ==, /, eltype,
+            show, sum, conj, issubset, first, last, rand, setdiff,
+            union, angle, isempty, one, promote_rule, real, imag
 
 import LinearAlgebra: norm, mul!, isdiag
 

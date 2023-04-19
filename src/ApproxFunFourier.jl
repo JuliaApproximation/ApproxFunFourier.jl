@@ -550,17 +550,33 @@ function domainsmultiple(A::Domain, B::Domain)
     pb = rb - lb
     dmin, dmax = minmax(pa, pb)
     T = promote_type(eltype(A), eltype(B))
-    if isapprox(mod(dmax, dmin), 0, atol=eps(T)) && (la ≈ lb || ra ≈ rb)
+    if isapprox(mod(dmax, dmin), 0, atol=eps(T)) && isapprox(la, lb, atol=eps(T)) || isapprox(ra, rb, atol=eps(T))
         return round(Int, dmax/dmin, RoundNearest)
     end
     return nothing
 end
 domainsmultiple(A::Space, B::Space) = domainsmultiple(map(domain, (A,B))...)
+# check if one domain may be scaled to obtain the other
+function domainsscaled(A::Domain, B::Domain)
+    la, ra = leftendpoint(A), rightendpoint(A)
+    lb, rb = leftendpoint(B), rightendpoint(B)
+    pa = ra - la
+    pb = rb - lb
+    dmin, dmax = minmax(pa, pb)
+    T = promote_type(eltype(A), eltype(B))
+    if isapprox(la, lb, atol=eps(T)) || isapprox(ra, rb, atol=eps(T))
+        return Rational(dmax/dmin)
+    end
+    return nothing
+end
+domainsscaled(A::Space, B::Space) = domainsscaled(map(domain, (A,B))...)
 function union(A::Fourier, B::Fourier)
     dA, dB = map(domain, (A,B))
     AB = domainsmultiple(dA, dB)
-    isnothing(AB) || return Fourier(period(dA) > period(dB) ? dA : dB)
-    A ⊕ B
+    isnothing(AB) || return Fourier(max(dA, dB))
+    scale = domainsscaled(dA, dB)
+    isnothing(scale) || return Fourier(max(dA, dB) * denominator(scale))
+    SumSpace(A, B)
 end
 _ind(i, n) = 2n * div(i, 2) + isodd(i)
 _invind(i, n) = 2div(i - isodd(i), 2n) + isodd(i)

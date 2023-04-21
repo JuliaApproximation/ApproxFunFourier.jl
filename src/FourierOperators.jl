@@ -365,7 +365,7 @@ Reverse(S::Fourier{D}) where {D} = ReverseWrapper(NegateEven(S,S))
 ## Multivariate
 
 
-for TYP in (:Fourier,:Laurent,:CosSpace,:SinSpace,:Taylor)
+for TYP in (:Fourier,)
     @eval begin
         function Dirichlet(S::TensorSpace{Tuple{$TYP{PeriodicSegment{T},R},PS}},k) where {PS,T,R}
             op = [Operator(I,S.spaces[1])⊗Evaluation(S.spaces[2],leftendpoint,k);
@@ -374,7 +374,7 @@ for TYP in (:Fourier,:Laurent,:CosSpace,:SinSpace,:Taylor)
         end
         function Dirichlet(S::TensorSpace{Tuple{PS,$TYP{PeriodicSegment{T},R}}},k) where {PS,T,R}
             op = [Evaluation(S.spaces[1],leftendpoint,k)⊗Operator(I,S.spaces[2]);
-                            Evaluation(S.spaces[1],rightendpoint,k)⊗ReverseOrientation(S[2]) ]
+                            Evaluation(S.spaces[1],rightendpoint,k)⊗ReverseOrientation(S.spaces[2]) ]
             DirichletWrapper(SpaceOperator(op,S,PiecewiseSpace(rangespace(op).spaces)),k)
         end
     end

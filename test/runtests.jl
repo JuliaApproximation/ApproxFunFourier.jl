@@ -752,6 +752,18 @@ end
     @test f(1.1im) ≈ 2exp(-1.1^2)
 end
 
+@testset "multivariate Dirichlet" begin
+    f = Fun((x,y) -> cos(x)*sin(y), CosSpace()*Fourier())
+    g = Dirichlet() * f
+    @test f(0, pi/2) ≈ g(0, pi/2) atol=1e-10
+    @test f(2pi, pi/2) ≈ g(2pi, pi/2) atol=1e-10
+
+    f = Fun((x,y) -> cos(x)*cos(y), Fourier()*CosSpace())
+    g = Dirichlet() * f
+    @test f(pi/2, 0) ≈ g(pi/2, 0) atol=1e-10
+    @test f(pi/2, 2pi) ≈ g(pi/2, 2pi) atol=1e-10
+end
+
 @testset "show" begin
     for (spT, spstr) in Any[(Fourier, "Fourier"), (CosSpace, "CosSpace"),
             (SinSpace, "SinSpace"), (Laurent, "Laurent"), (Taylor, "Taylor")]

@@ -317,11 +317,11 @@ function Conversion(A::Laurent{DD,RR},B::Laurent{DD,RR}) where {DD,RR}
 end
 
 Evaluation(F::Laurent{<:PeriodicSegment}, x, order) = ConcreteEvaluation(F, x, order)
-function _eval(C, ::Laurent, order, x::SpecialEvalPtType, m, k)
+function _conceval(C, ::Laurent, order, x::SpecialEvalPtType, m, k)
     one(eltype(C))
 end
 flip_even(k) = isodd(k) ? 1 : -1
-function _eval(C, ::Laurent, order, x, m, k)
+function _conceval(C, ::Laurent, order, x, m, k)
     y = tocanonical(domain(C), x)
     s = flip_even(k)
     t = cis(s * m * y)
@@ -331,7 +331,7 @@ function getindex(C::ConcreteEvaluation{<:Laurent{<:PeriodicSegment}}, k::Intege
     m = k ÷ 2
     order = C.order
     L = period(domain(C))
-    t = _eval(C, domainspace(C), C.order, evaluation_point(C), m, k)
+    t = _conceval(C, domainspace(C), C.order, evaluation_point(C), m, k)
     s = flip_even(k)
     r = (im * s * m * 2pi/L)^order * t
     convert(eltype(C), r)

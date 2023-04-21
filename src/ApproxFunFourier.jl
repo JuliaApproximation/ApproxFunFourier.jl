@@ -262,14 +262,14 @@ function evaluate(f::AbstractVector,S::CosSpace,t)
     end
 end
 
-function _eval(C, ::CosSpace, order, x::SpecialEvalPtType, m)
+function _conceval(C, ::CosSpace, order, x::SpecialEvalPtType, m)
     if iseven(order)
         one(eltype(C))
     else
         zero(eltype(C))
     end
 end
-function _eval(C, ::CosSpace, order, x, m)
+function _conceval(C, ::CosSpace, order, x, m)
     y = tocanonical(domain(C), x)
     t = if iseven(order)
         cos(m * y)
@@ -282,7 +282,7 @@ function getindex(C::ConcreteEvaluation{<:CosSpace{<:PeriodicSegment}}, k::Integ
     m = k - 1
     order = C.order
     L = period(domain(C))
-    t = _eval(C, domainspace(C), C.order, evaluation_point(C), m)
+    t = _conceval(C, domainspace(C), C.order, evaluation_point(C), m)
     s = mod(order, 4) ∈ (1,2) ? -1 : 1
     r = s * (m * 2pi/L)^order * t
     convert(eltype(C), r)
@@ -318,14 +318,14 @@ itransform(sp::SinSpace,vals::AbstractVector,plan) = plan*vals
 
 evaluate(f::AbstractVector,S::SinSpace,t) = sineshaw(f,tocanonical(S,t))
 
-function _eval(C, ::SinSpace, order, x::SpecialEvalPtType, k)
+function _conceval(C, ::SinSpace, order, x::SpecialEvalPtType, k)
     if iseven(order)
         zero(eltype(C))
     else
         one(eltype(C))
     end
 end
-function _eval(C, ::SinSpace, order, x, m)
+function _conceval(C, ::SinSpace, order, x, m)
     y = tocanonical(domain(C), x)
     t = if iseven(order)
         sin(m * y)
@@ -338,7 +338,7 @@ function getindex(C::ConcreteEvaluation{<:SinSpace{<:PeriodicSegment}}, k::Integ
     m = k
     order = C.order
     L = period(domain(C))
-    t = _eval(C, domainspace(C), C.order, evaluation_point(C), m)
+    t = _conceval(C, domainspace(C), C.order, evaluation_point(C), m)
     s = mod(order, 4) ∈ (0,1) ? 1 : -1
     r = s * (m * 2pi/L)^order * t
     convert(eltype(C), r)

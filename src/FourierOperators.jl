@@ -381,14 +381,14 @@ for TYP in (:Fourier,:Laurent,:CosSpace,:SinSpace,:Taylor)
 end
 
 Evaluation(F::Fourier{<:PeriodicSegment}, x, order) = ConcreteEvaluation(F, x, order)
-function _eval(C, ::Fourier, order, x::SpecialEvalPtType, m, k)
+function _conceval(C, ::Fourier, order, x::SpecialEvalPtType, m, k)
     if (iseven(order) && isodd(k)) || (isodd(order) && iseven(k))
         one(eltype(C))
     else
         zero(eltype(C))
     end
 end
-function _eval(C, ::Fourier, order, x, m, k)
+function _conceval(C, ::Fourier, order, x, m, k)
     y = tocanonical(domain(C), x)
     t = if (iseven(order) && isodd(k)) || (isodd(order) && iseven(k))
         cos(m * y)
@@ -401,7 +401,7 @@ function getindex(C::ConcreteEvaluation{<:Fourier{<:PeriodicSegment}}, k::Intege
     m = k ÷ 2
     order = C.order
     L = period(domain(C))
-    t = _eval(C, domainspace(C), C.order, evaluation_point(C), m, k)
+    t = _conceval(C, domainspace(C), C.order, evaluation_point(C), m, k)
     s = (-1)^((order + isodd(k))÷2)
     r = s * (m * 2pi/L)^order * t
     convert(eltype(C), r)

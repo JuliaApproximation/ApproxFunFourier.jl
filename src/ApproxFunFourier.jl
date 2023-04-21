@@ -334,7 +334,7 @@ function _eval(C, ::SinSpace, order, x, m)
     end
     convert(eltype(C), t)
 end
-function getindex(C::ConcreteEvaluation{<:SinSpace{<:PeriodicSegment}, <:SpecialEvalPtType}, k::Integer)
+function getindex(C::ConcreteEvaluation{<:SinSpace{<:PeriodicSegment}}, k::Integer)
     m = k
     order = C.order
     L = period(domain(C))

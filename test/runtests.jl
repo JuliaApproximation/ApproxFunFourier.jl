@@ -110,6 +110,35 @@ end
 
     ## Bug in multiplicaiton
     @test Fun(SinSpace(),Float64[])^2 == Fun(SinSpace(),Float64[])
+
+    @testset "Evaluation" begin
+        @testset "CosSpace" begin
+            @testset for sp in [CosSpace(), CosSpace(1..2)]
+                f = Fun(sp, Float64[1:8;])
+                @test ldirichlet(sp) * f ≈ f(leftendpoint(domain(f)))
+                @test rdirichlet(sp) * f ≈ f(rightendpoint(domain(f)))
+                @test (lneumann(sp) * f)(leftendpoint(domain(f))) ≈ f'(leftendpoint(domain(f))) atol=1e-10
+                @test (rneumann(sp) * f)(rightendpoint(domain(f))) ≈ f'(rightendpoint(domain(f))) atol=1e-10
+                pt = 1.2
+                @test Evaluation(sp, pt, 0) * f ≈ f(pt)
+                @test Evaluation(sp, pt, 1) * f ≈ f'(pt)
+                @test Evaluation(sp, pt, 2) * f ≈ f''(pt)
+            end
+        end
+        @testset "SinSpace" begin
+            @testset for sp in [SinSpace(), SinSpace(1..2)]
+                f = Fun(sp, Float64[1:8;])
+                @test (ldirichlet(sp) * f)(leftendpoint(domain(f))) ≈ f(leftendpoint(domain(f))) atol=1e-10
+                @test (rdirichlet(sp) * f)(leftendpoint(domain(f))) ≈ f(rightendpoint(domain(f))) atol=1e-10
+                @test lneumann(sp) * f ≈ f'(leftendpoint(domain(f)))
+                @test rneumann(sp) * f ≈ f'(rightendpoint(domain(f)))
+                pt = 1.2
+                @test Evaluation(sp, pt, 0) * f ≈ f(pt)
+                @test Evaluation(sp, pt, 1) * f ≈ f'(pt)
+                @test Evaluation(sp, pt, 2) * f ≈ f''(pt)
+            end
+        end
+    end
 end
 
 
@@ -252,6 +281,20 @@ end
         @test coefficients([4; zeros(4); [1, 2]; zeros(4); 3], Fourier(0..6pi), Fourier(0..2pi)) ≈ [4,1,2,3]
         @test coefficients([4; zeros(6); [1, 2]; zeros(6); 3], Fourier(0..8pi), Fourier(0..2pi)) ≈ [4,1,2,3]
     end
+
+    @testset "Evaluation" begin
+        @testset for sp in [Fourier(), Fourier(1..2)]
+            f = Fun(sp, Float64[1:8;])
+            @test ldirichlet(sp) * f ≈ f(leftendpoint(domain(f)))
+            @test rdirichlet(sp) * f ≈ f(rightendpoint(domain(f)))
+            @test (lneumann(sp) * f)(leftendpoint(domain(f))) ≈ f'(leftendpoint(domain(f))) atol=1e-10
+            @test (rneumann(sp) * f)(rightendpoint(domain(f))) ≈ f'(rightendpoint(domain(f))) atol=1e-10
+            pt = 1.2
+            @test Evaluation(sp, pt, 0) * f ≈ f(pt)
+            @test Evaluation(sp, pt, 1) * f ≈ f'(pt)
+            @test Evaluation(sp, pt, 2) * f ≈ f''(pt)
+        end
+    end
 end
 
 @testset "Laurent" begin
@@ -271,6 +314,20 @@ end
     ## Diagonal Derivative
     D = @inferred Derivative(Laurent())
     @test isdiag(D)
+
+    @testset "Evaluation" begin
+        @testset for sp in [Laurent(), Laurent(1..2)]
+            f = Fun(sp, Float64[1:8;])
+            @test ldirichlet(sp) * f ≈ f(leftendpoint(domain(f)))
+            @test rdirichlet(sp) * f ≈ f(rightendpoint(domain(f)))
+            @test (lneumann(sp) * f)(leftendpoint(domain(f))) ≈ f'(leftendpoint(domain(f))) atol=1e-10
+            @test (rneumann(sp) * f)(rightendpoint(domain(f))) ≈ f'(rightendpoint(domain(f))) atol=1e-10
+            pt = 1.2
+            @test Evaluation(sp, pt, 0) * f ≈ f(pt)
+            @test Evaluation(sp, pt, 1) * f ≈ f'(pt)
+            @test Evaluation(sp, pt, 2) * f ≈ f''(pt)
+        end
+    end
 end
 
 @testset "Circle" begin

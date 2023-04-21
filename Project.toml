@@ -1,6 +1,6 @@
 name = "ApproxFunFourier"
 uuid = "59844689-9c9d-51bf-9583-5b794ec66d30"
-version = "0.3.19"
+version = "0.3.20"
 
 [deps]
 AbstractFFTs = "621f4979-c628-5d54-868e-fcf4e3e8185c"
@@ -17,7 +17,7 @@ StaticArrays = "90137ffa-7385-5640-81b9-e52037218182"
 
 [compat]
 AbstractFFTs = "0.5, 1"
-ApproxFunBase = "0.8.9"
+ApproxFunBase = "0.8.16"
 ApproxFunBaseTest = "0.1"
 ApproxFunOrthogonalPolynomials = "0.6"
 Aqua = "0.5"

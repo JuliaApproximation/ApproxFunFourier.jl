@@ -35,7 +35,8 @@ import ApproxFunBase: Fun, SumSpace, SubSpace, NoSpace, IntervalOrSegment,
             reverseeven!, negateeven!, cfstype, alternatesign!, extremal_args,
             hesseneigvals, chebyshev_clenshaw, roots, EmptyDomain,
             chebmult_getindex, components, affine_setdiff, complexroots,
-            assert_integer, companion_matrix, InterlaceOperator_Diagonal
+            assert_integer, companion_matrix, InterlaceOperator_Diagonal,
+            evaluation_point, SpecialEvalPtType
 
 import BandedMatrices: bandwidths
 
@@ -261,6 +262,31 @@ function evaluate(f::AbstractVector,S::CosSpace,t)
     end
 end
 
+function _conceval(C, ::CosSpace, order, x::SpecialEvalPtType, m)
+    if iseven(order)
+        one(eltype(C))
+    else
+        zero(eltype(C))
+    end
+end
+function _conceval(C, ::CosSpace, order, x, m)
+    y = tocanonical(domain(C), x)
+    t = if iseven(order)
+        cos(m * y)
+    else
+        sin(m * y)
+    end
+    convert(eltype(C), t)
+end
+function getindex(C::ConcreteEvaluation{<:CosSpace{<:PeriodicSegment}}, k::Integer)
+    m = k - 1
+    order = C.order
+    L = period(domain(C))
+    t = _conceval(C, domainspace(C), C.order, evaluation_point(C), m)
+    s = mod(order, 4) ∈ (1,2) ? -1 : 1
+    r = s * (m * 2pi/L)^order * t
+    convert(eltype(C), r)
+end
 
 points(sp::SinSpace,n)=points(domain(sp),2n+2)[2:n+1]
 
@@ -292,7 +318,31 @@ itransform(sp::SinSpace,vals::AbstractVector,plan) = plan*vals
 
 evaluate(f::AbstractVector,S::SinSpace,t) = sineshaw(f,tocanonical(S,t))
 
-
+function _conceval(C, ::SinSpace, order, x::SpecialEvalPtType, k)
+    if iseven(order)
+        zero(eltype(C))
+    else
+        one(eltype(C))
+    end
+end
+function _conceval(C, ::SinSpace, order, x, m)
+    y = tocanonical(domain(C), x)
+    t = if iseven(order)
+        sin(m * y)
+    else
+        cos(m * y)
+    end
+    convert(eltype(C), t)
+end
+function getindex(C::ConcreteEvaluation{<:SinSpace{<:PeriodicSegment}}, k::Integer)
+    m = k
+    order = C.order
+    L = period(domain(C))
+    t = _conceval(C, domainspace(C), C.order, evaluation_point(C), m)
+    s = mod(order, 4) ∈ (0,1) ? 1 : -1
+    r = s * (m * 2pi/L)^order * t
+    convert(eltype(C), r)
+end
 
 ## Laurent space
 """

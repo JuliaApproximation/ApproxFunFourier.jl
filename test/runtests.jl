@@ -328,6 +328,11 @@ end
             @test Evaluation(sp, pt, 2) * f ≈ f''(pt)
         end
     end
+
+    f = Fun(cos, Laurent(0..2pi))
+    g = Conversion(Laurent(0..2pi), Laurent(2pi..0)) * f
+    @test space(g) == Laurent(2pi..0)
+    @test g(pi/3) ≈ f(pi/3)
 end
 
 @testset "Circle" begin

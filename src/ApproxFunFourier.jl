@@ -36,7 +36,7 @@ import ApproxFunBase: Fun, SumSpace, SubSpace, NoSpace, IntervalOrSegment,
             hesseneigvals, chebyshev_clenshaw, roots, EmptyDomain,
             chebmult_getindex, components, affine_setdiff, complexroots,
             assert_integer, companion_matrix, InterlaceOperator_Diagonal,
-            evaluation_point, SpecialEvalPtType
+            evaluation_point, SpecialEvalPtType, PermutationOperator
 
 import BandedMatrices: bandwidths
 

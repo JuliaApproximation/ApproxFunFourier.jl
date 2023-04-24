@@ -161,6 +161,9 @@ end
 
     @test Multiplication(Fun(Taylor()),Taylor())[1:3,1:3] == [0. 0. 0.; 1. 0. 0.; 0. 1. 0.]
 
+    f = Fun(x->exp(2pi*im*x), Taylor(0..1))
+    @test f(0.4) ≈ exp(2pi*im*0.4)
+
     # check's Derivative constructor works
     D=Derivative(Taylor(PeriodicSegment()))
 end

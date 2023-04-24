@@ -71,9 +71,10 @@ for T in (:CosSpace,:SinSpace)
             $T{D,R}(d::PeriodicDomain) where {D,R} = new(convert(D,d))
             $T{D,R}(d::D) where{D,R} = new(d)
         end
-        $T(d::PeriodicDomain) = $T{typeof(d),real(prectype(d))}(d)
-        $T(d) = $T(convert(PeriodicDomain, d))
-        $T() = $T(PeriodicSegment())
+        function $T(d = PeriodicSegment())
+            dp = convert(PeriodicDomain, d)
+            $T{typeof(dp),real(prectype(dp))}(dp)
+        end
         spacescompatible(a::$T,b::$T) = domainscompatible(a,b)
         hasfasttransform(::$T) = true
         canonicalspace(S::$T) = Fourier(domain(S))
@@ -135,8 +136,10 @@ Base.promote_rule(::Type{Fun{S,V}},::Type{T}) where {T<:Number,S<:Union{Hardy{tr
 Base.promote_rule(::Type{Fun{S}},::Type{T}) where {T<:Number,S<:Union{Hardy{true},CosSpace}} =
     Fun{S,T}
 
-(H::Type{Hardy{s}})(d::PeriodicDomain) where {s} = Hardy{s,typeof(d),complex(prectype(d))}(d)
-(H::Type{Hardy{s}})() where {s} = Hardy{s}(Circle())
+function (H::Type{Hardy{s}})(d = Circle()) where {s}
+    dp = convert(PeriodicDomain, d)
+    Hardy{s,typeof(dp),complex(prectype(dp))}(dp)
+end
 
 canonicalspace(S::Hardy) = S
 setdomain(S::Hardy{s},d::PeriodicDomain) where {s} = Hardy{s}(d)
@@ -471,8 +474,10 @@ Fourier(d::PeriodicDomain) = Fourier{typeof(d),real(prectype(d))}(d)
 
 for Typ in (:Laurent,:Fourier)
     @eval begin
-        $Typ() = $Typ(PeriodicSegment())
-        $Typ(d) = $Typ(convert(PeriodicDomain, d))
+        function $Typ(d = PeriodicSegment())
+            dp = convert(PeriodicDomain, d)
+            $Typ(dp)
+        end
 
         hasfasttransform(::$Typ{D,R}) where {D,R} = true
     end
@@ -748,19 +753,21 @@ function Fun(T::ToeplitzOperator)
      end
  end
 
-Base.show(io::IO,d::Circle) =
+show(io::IO,d::Circle) =
     print(io,(d.radius==1 ? "" : string(d.radius))*
                     (d.orientation ? "🕒" : "🕞")*
                     (d.center==0 ? "" : "+$(d.center)"))
 
-Base.show(io::IO, d::PeriodicSegment) = print(io,"【$(leftendpoint(d)),$(rightendpoint(d))❫")
-for typ in (:Fourier, :Laurent, :Taylor, :SinSpace, :CosSpace)
-    typstr = string(typ)
-    @eval function Base.show(io::IO, S::$typ)
-        print(io, $typstr, "(")
-        show(io, domain(S))
-        print(io, ")")
-    end
+show(io::IO, d::PeriodicSegment) = print(io,"【$(leftendpoint(d)),$(rightendpoint(d))❫")
+const SpaceTypes = Union{Fourier, Laurent, Taylor, SinSpace, CosSpace}
+_nameof(S::Union{CosSpace, SinSpace}) = nameof(typeof(S))
+_nameof(S::Fourier) = "Fourier"
+_nameof(S::Laurent) = "Laurent"
+_nameof(S::Taylor) = "Taylor"
+function show(io::IO, S::SpaceTypes)
+    print(io, _nameof(S), "(")
+    show(io, domain(S))
+    print(io, ")")
 end
 
 end #module

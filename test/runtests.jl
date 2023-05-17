@@ -298,6 +298,11 @@ end
             @test Evaluation(sp, pt, 2) * f ≈ f''(pt)
         end
     end
+
+    @testset "ApproxFun issue #807" begin
+        @test cumsum(Fun(Fourier(),[1,0,1]))(0.1) ≈ (x -> x + sin(x))(0.1)
+        @test cumsum(Fun(Fourier(),[1,1,1]))(0.1) ≈ (x -> x + 1 - cos(x) + sin(x))(0.1)
+    end
 end
 
 @testset "Laurent" begin

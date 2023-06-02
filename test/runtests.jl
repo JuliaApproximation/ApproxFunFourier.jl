@@ -16,7 +16,7 @@ using Test
 using Aqua
 @testset "Project quality" begin
     Aqua.test_all(ApproxFunFourier, ambiguities=false,
-        stale_deps=(; ignore=[:ApproxFunBaseTest]))
+        stale_deps=(; ignore=[:ApproxFunBaseTest]), piracy = false)
 end
 
 @testset "Periodic Domains" begin

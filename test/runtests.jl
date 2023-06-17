@@ -22,6 +22,10 @@ using Aqua
         project_toml_formatting = VERSION >= v"1.9")
 end
 
+@testset "utils" begin
+    @test ApproxFunFourier.neg1pow(1.0) ≈ ApproxFunFourier.neg1pow(1)
+end
+
 @testset "Periodic Domains" begin
     @test 0.1 ∈ PeriodicSegment(2π,0)
     @test 100.0 ∈ PeriodicSegment(0,2π)

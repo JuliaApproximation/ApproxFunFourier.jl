@@ -397,12 +397,15 @@ function _conceval(C, ::Fourier, order, x, m, k)
     end
     convert(eltype(C), t)
 end
+neg1pow(x) = (-1)^x
+neg1pow(x::Integer) = iseven(x) ? 1 : -1
 function getindex(C::ConcreteEvaluation{<:Fourier{<:PeriodicSegment}}, k::Integer)
     m = k ÷ 2
     order = C.order
     L = period(domain(C))
     t = _conceval(C, domainspace(C), C.order, evaluation_point(C), m, k)
-    s = (-1)^((order + isodd(k))÷2)
+    # s = (-1)^((order + isodd(k))÷2) # faster implementation below
+    s = neg1pow((order + isodd(k)) ÷ 2)
     r = s * (m * 2pi/L)^order * t
     convert(eltype(C), r)
 end

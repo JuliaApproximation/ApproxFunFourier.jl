@@ -402,7 +402,8 @@ function getindex(C::ConcreteEvaluation{<:Fourier{<:PeriodicSegment}}, k::Intege
     order = C.order
     L = period(domain(C))
     t = _conceval(C, domainspace(C), C.order, evaluation_point(C), m, k)
-    s = (-1)^((order + isodd(k))÷2)
+    # s = (-1)^((order + isodd(k))÷2) # faster implementation below
+    s = trailing_zeros(order + k) == 0 ? 1 : -1
     r = s * (m * 2pi/L)^order * t
     convert(eltype(C), r)
 end

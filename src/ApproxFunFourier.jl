@@ -4,9 +4,8 @@ using LinearAlgebra, Reexport, AbstractFFTs, FFTW, InfiniteArrays,
 
 @reexport using ApproxFunBase
 
-import AbstractFFTs: Plan, fft, ifft
-import FFTW: plan_r2r!, fftwNumber, RODFT00, R2HC, HC2R, plan_fft, plan_ifft,
-            plan_ifft!, plan_fft!
+import AbstractFFTs: Plan, fft, ifft, plan_fft, plan_ifft, plan_ifft!, plan_fft!
+import FFTW: plan_r2r!, fftwNumber, RODFT00, R2HC, HC2R
 
 import ApproxFunBase: Fun, SumSpace, SubSpace, NoSpace, IntervalOrSegment,
             AnyDomain, AbstractTransformPlan, TransformPlan, ITransformPlan,

@@ -1,5 +1,5 @@
 module ApproxFunFourier
-using Base, LinearAlgebra, Reexport, AbstractFFTs, FFTW, InfiniteArrays,
+using LinearAlgebra, Reexport, AbstractFFTs, FFTW, InfiniteArrays,
             FastTransforms, IntervalSets, DomainSets
 
 @reexport using ApproxFunBase

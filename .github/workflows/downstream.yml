@@ -1,8 +1,9 @@
 name: IntegrationTest
+
 on:
   push:
     branches: [master]
-    tags: [v*]
+    tags: 'v*'
     paths-ignore:
       - 'LICENSE'
       - 'README.md'
@@ -12,6 +13,10 @@ on:
       - 'LICENSE'
       - 'README.md'
       - '.github/workflows/TagBot.yml'
+
+concurrency:
+  group: build-${{ github.event.pull_request.number || github.ref }}-${{ github.workflow }}
+  cancel-in-progress: true
 
 jobs:
   pre_job:

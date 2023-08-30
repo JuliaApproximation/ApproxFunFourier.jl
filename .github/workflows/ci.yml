@@ -1,4 +1,5 @@
 name: CI
+
 on:
   push:
     branches:
@@ -14,7 +15,7 @@ on:
       - '.github/workflows/TagBot.yml'
 
 concurrency:
-  group: build-${{ github.event.pull_request.number || github.ref }}
+  group: build-${{ github.event.pull_request.number || github.ref }}-${{ github.workflow }}
   cancel-in-progress: true
 
 jobs:

@@ -7,7 +7,7 @@ using ApproxFunBaseTest: testspace, testtransforms, testmultiplication, testragg
 using ApproxFunOrthogonalPolynomials
 using LinearAlgebra
 using SpecialFunctions
-using DomainSets
+using DomainSets: radius, center
 _factorial(n) = gamma(n+1)
 
 using StaticArrays: SVector

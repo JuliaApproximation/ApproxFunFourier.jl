@@ -572,6 +572,14 @@ end
     @test L[1,1] == 0
 end
 
+@testset "tensor product of Fourier spaces, issue ApproxFun.jl#929" begin
+    f = Fun(Fourier(), [0; 0; 1])
+    g = Fun(Fourier(), [0; 0; 0; 0; 0; 1])
+    h = f ⊗ g
+    @test h(π/3, π/2) ≈ f(π/3) * g(π/2)
+    @test h(π/4, π/5) ≈ f(π/4) * g(π/5)
+end
+
 @testset "Piecewise + Constant" begin
     Γ=Circle() ∪ Circle(0.0,0.4)
     o=ones(Γ)

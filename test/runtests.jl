@@ -1,7 +1,7 @@
 using ApproxFunFourier
 using ApproxFunBase
 using ApproxFunBase: Block, EmptyDomain, UnionDomain
-using ApproxFunBaseTest: testspace, testtransforms, testmultiplication, testraggedbelowoperator,
+using ApproxFunBase.TestUtils: testspace, testtransforms, testmultiplication, testraggedbelowoperator,
                     testbandedoperator, testblockbandedoperator, testbandedblockbandedoperator,
                     testcalculus, testfunctional
 using ApproxFunOrthogonalPolynomials

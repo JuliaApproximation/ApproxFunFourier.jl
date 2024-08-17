@@ -27,10 +27,14 @@ end
     @test 0.1 ∈ PeriodicSegment(2π,0)
     @test 100.0 ∈ PeriodicSegment(0,2π)
     @test -100.0 ∈ PeriodicSegment(0,2π)
+    @test 0 ∈ PeriodicSegment(-2,3)  #issue 125
+    @test 1e-15 ∈ PeriodicSegment(-2,3) #issue 125
 
-    @test 10.0 ∈ PeriodicLine()
+    @test 10.0 ∈ PeriodicLine() 
     @test -10.0 ∈ PeriodicLine()
     @test -10.0+im ∉ PeriodicLine()
+    @test 0 ∈ PeriodicLine() #issue 125
+    @test 1e-15 ∈ PeriodicLine() #issue 125
 
     p = PeriodicSegment(0,2π)
     @test leftendpoint(p) == 0

@@ -102,7 +102,7 @@ function convert(::Type{PeriodicDomain},d::ClosedInterval)
     end
 end
 
-indomain(x::R1, d::PeriodicSegment{R2}) where {R1<:Real,R2<:Real} = true
+indomain(x::R1, d::PeriodicSegment{R2}) where {R1<:Real,R2<:Real} = isfinite(x)
 issubset(a::PeriodicSegment, b::IntervalOrSegment) = Segment(endpoints(a)...)⊆b
 issubset(a::IntervalOrSegment, b::PeriodicSegment) = PeriodicSegment(endpoints(a)...)⊆b
 

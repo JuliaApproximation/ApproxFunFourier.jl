@@ -72,9 +72,6 @@ reverseorientation(d::PeriodicSegment) = PeriodicSegment(rightendpoint(d), lefte
 ==(d::PeriodicSegment,m::PeriodicSegment) = leftendpoint(d) == m.a && rightendpoint(d) == m.b
 
 
-
-
-
 ## algebra
 
 for op in (:*,:+,:-)
@@ -105,6 +102,7 @@ function convert(::Type{PeriodicDomain},d::ClosedInterval)
     end
 end
 
+indomain(x::R1, d::PeriodicSegment{R2}) where {R1<:Real,R2<:Real} = isfinite(x)
 issubset(a::PeriodicSegment, b::IntervalOrSegment) = Segment(endpoints(a)...)⊆b
 issubset(a::IntervalOrSegment, b::PeriodicSegment) = PeriodicSegment(endpoints(a)...)⊆b
 

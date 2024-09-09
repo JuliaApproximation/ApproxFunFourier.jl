@@ -776,4 +776,6 @@ function show(io::IO, S::SpaceTypes)
     print(io, ")")
 end
 
+include("Convolution.jl")
+
 end #module

@@ -806,3 +806,42 @@ end
         end
     end
 end
+
+@testset "Convolution" begin
+    @test bandwidths(Convolution(ones(Laurent())))==(0,0)
+    @test bandwidths(Convolution(ones(Fourier())))==(1,1)
+
+    atol=1e-6
+    rtol=1e-6
+
+    for S=[Laurent(-15..3),Fourier(-15..3)]
+        f1=ones(S)
+        f2=ones(S)
+        f1f2_theory=18*ones(S)
+        f1f2=Convolution(f1)*f2
+        @test ≈(f1f2,f1f2_theory,atol=atol,rtol=rtol)
+        @test ≈(DefiniteIntegral()*f1f2,(DefiniteIntegral()*f1)*(DefiniteIntegral()*f2),atol=atol,rtol=rtol)
+    end
+
+    for S=[Laurent(-2..3),Fourier(-2..3)]
+        f1=Fun(x->exp(-5*(x-0.5)^2),S)
+        f2=Fun(x->exp(-5*x^2),S)
+        f1f2_theory=Fun(x->exp(-5*(x-0.5)^2/2)*sqrt(2pi)/10*sqrt(5),S)
+        f1f2=Convolution(f1)*f2
+        f2f1=Convolution(f2)*f1
+        @test ≈(f1f2,f1f2_theory,atol=atol,rtol=rtol)
+        @test ≈(f2f1,f1f2_theory,atol=atol,rtol=rtol)
+        @test ≈(DefiniteIntegral()*f1f2,(DefiniteIntegral()*f1)*(DefiniteIntegral()*f2),atol=atol,rtol=rtol)
+        @test ≈(DefiniteIntegral()*f2f1,(DefiniteIntegral()*f1)*(DefiniteIntegral()*f2),atol=atol,rtol=rtol)
+    end
+    for S=[Laurent(0..2pi),Fourier(0..2pi)]
+        f1=Fun(x->exp(1im*x),S)
+        f2=Fun(x->exp(1im*x),S)
+        f1f2_theory=Fun(x->2pi*exp(1im*x),S)
+        f1f2=Convolution(f1)*f2
+        @test ≈(f1f2,f1f2_theory,atol=atol,rtol=rtol)
+        @test ≈(DefiniteIntegral()*f1f2,(DefiniteIntegral()*f1)*(DefiniteIntegral()*f2),atol=atol,rtol=rtol)
+         
+        @test Convolution(Fun(S,[]))*f1≈0
+    end
+end

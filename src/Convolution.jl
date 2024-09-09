@@ -3,7 +3,7 @@ export Convolution
 """
 	Convolution(G)
 
-Represents a convolution operator with function `G`. When applied to a function `f` it computes `∫_D G(x-y) u(y) dy for x ∈ D`. For now `D` is a `PeriodigSegment(a,b)` with `a<b∈R` and `space(G)` is either `Laurent(D)` or `Fourier(D)`.
+Represents a convolution operator with function `G`. When applied to a function `f` it computes `∫_D G(x-y) f(y) dy for x ∈ D`. For now `D` is a `PeriodigSegment(a,b)` with `a<b∈R` and `space(G)` is either `Laurent(D)` or `Fourier(D)`.
 """
 
 abstract type Convolution{S,T} <: Operator{T} end

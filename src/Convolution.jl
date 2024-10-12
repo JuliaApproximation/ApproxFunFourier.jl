@@ -20,12 +20,12 @@ ApproxFunBase.domain(C::ConcreteConvolution) = ApproxFunBase.domain(C.G)
 ApproxFunBase.domainspace(C::ConcreteConvolution) = ApproxFunBase.space(C.G)
 ApproxFunBase.rangespace(C::ConcreteConvolution) = ApproxFunBase.space(C.G)
 ApproxFunBase.bandwidths(C::ConcreteConvolution) = error("Please implement convolution bandwidths on "*string(space(C.G)))
-ApproxFunBase.getindex(C::ConcreteConvolution,k::Integer,j::Integer) = error("Please implement convolution getindex on "*string(space(C.G)))
+getindex(C::ConcreteConvolution,k::Integer,j::Integer) = error("Please implement convolution getindex on "*string(space(C.G)))
 
 ApproxFunBase.bandwidths(C::ConcreteConvolution{Laurent{PeriodicSegment{R},T}}) where {R<:Real,T} = 0,0
 ApproxFunBase.bandwidths(C::ConcreteConvolution{Fourier{PeriodicSegment{R},T}}) where {R<:Real,T} = 1,1
 
-function ApproxFunBase.getindex(C::ConcreteConvolution{Laurent{PeriodicSegment{R},T1},T2},k::Integer,j::Integer) where {R<:Real,T1,T2}
+function getindex(C::ConcreteConvolution{Laurent{PeriodicSegment{R},T1},T2},k::Integer,j::Integer) where {R<:Real,T1,T2}
     fourier_index::Integer = if isodd(k) div(k-1,2) else -div(k,2) end
     if k == j && k ≤ ncoefficients(C.G)
         return (exp(-2pi*1im/arclength(domain(C.G))*fourier_index*first(domain(C.G)))*arclength(domain(C.G))*C.G.coefficients[k])::T2
@@ -34,7 +34,7 @@ function ApproxFunBase.getindex(C::ConcreteConvolution{Laurent{PeriodicSegment{R
     end
 end
 
-function ApproxFunBase.getindex(C::ConcreteConvolution{Fourier{PeriodicSegment{R},T1},T2},k::Integer,j::Integer) where {R<:Real,T1,T2}
+function getindex(C::ConcreteConvolution{Fourier{PeriodicSegment{R},T1},T2},k::Integer,j::Integer) where {R<:Real,T1,T2}
     fourier_index::Integer = if isodd(k) div(k-1,2) else div(k,2) end
     if k<1 || j<1 || ncoefficients(C.G)==0
         return zero(T2)

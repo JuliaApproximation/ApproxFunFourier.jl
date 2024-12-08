@@ -67,9 +67,6 @@ export Fourier, Taylor, Hardy, CosSpace, SinSpace, Laurent, PeriodicDomain
 include("utils.jl")
 include("Domains/Domains.jl")
 
-convert_vector_or_svector(v::AbstractVector) = convert(Vector, v)
-convert_vector_or_svector(t::Tuple) = SVector(t)
-
 for T in (:CosSpace,:SinSpace)
     @eval begin
         struct $T{D<:PeriodicDomain,R} <: Space{D,R}

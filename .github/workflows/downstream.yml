@@ -37,20 +37,20 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        julia-version: [1, 1.6]
+        julia-version: [1, 'min']
         os: [ubuntu-latest]
         package:
           - {repo: ApproxFun.jl, group: JuliaApproximation}
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: julia-actions/setup-julia@v2
         with:
           version: ${{ matrix.julia-version }}
           arch: x64
       - uses: julia-actions/julia-buildpkg@latest
       - name: Clone Downstream
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           repository: ${{ matrix.package.group }}/${{ matrix.package.repo }}
           path: downstream

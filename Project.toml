@@ -1,6 +1,6 @@
 name = "ApproxFunFourier"
 uuid = "59844689-9c9d-51bf-9583-5b794ec66d30"
-version = "0.3.31"
+version = "0.3.32"
 
 [deps]
 AbstractFFTs = "621f4979-c628-5d54-868e-fcf4e3e8185c"
@@ -31,7 +31,7 @@ Reexport = "0.2, 1"
 SpecialFunctions = "0.8, 0.9, 0.10, 1.0, 2.0"
 StaticArrays = "1"
 Test = "1"
-julia = "1.6"
+julia = "1.10"
 
 [extras]
 ApproxFunOrthogonalPolynomials = "b70543e2-c0d9-56b8-a290-0d4d6d4de211"

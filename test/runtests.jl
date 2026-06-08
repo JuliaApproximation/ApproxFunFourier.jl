@@ -1,6 +1,6 @@
 using ApproxFunFourier
 using ApproxFunBase
-using ApproxFunBase: Block, EmptyDomain, UnionDomain
+using ApproxFunBase: Block, EmptyDomain, UnionDomain, cartesianproduct
 using ApproxFunBase.TestUtils: testspace, testtransforms, testmultiplication, testraggedbelowoperator,
                     testbandedoperator, testblockbandedoperator, testbandedblockbandedoperator,
                     testcalculus, testfunctional
@@ -45,9 +45,9 @@ end
 
     @test SVector(1,0) ∈ Circle((0.,0.),1.)
 
-    @test ∂(PeriodicSegment() × ChebyshevInterval()) isa UnionDomain
-    @test ∂(ChebyshevInterval() × PeriodicSegment()) isa UnionDomain
-    @test ∂(PeriodicSegment() × PeriodicSegment()) isa EmptyDomain
+    @test ∂(cartesianproduct(PeriodicSegment(), ChebyshevInterval())) isa UnionDomain
+    @test ∂(cartesianproduct(ChebyshevInterval(), PeriodicSegment())) isa UnionDomain
+    @test ∂(cartesianproduct(PeriodicSegment(), PeriodicSegment())) isa EmptyDomain
 
     T = PeriodicSegment{SVector{2,Float64}}
     @test convert(T, ApproxFunBase.AnyDomain()) isa T

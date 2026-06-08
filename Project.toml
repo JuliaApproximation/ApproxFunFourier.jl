@@ -17,8 +17,8 @@ StaticArrays = "90137ffa-7385-5640-81b9-e52037218182"
 
 [compat]
 AbstractFFTs = "0.5, 1"
-ApproxFunBase = "0.8.67, 0.9.28"
-ApproxFunOrthogonalPolynomials = "0.6"
+ApproxFunBase = "0.9.35"
+ApproxFunOrthogonalPolynomials = "0.6.63"
 Aqua = "0.8"
 BandedMatrices = "0.16, 0.17, 1"
 DomainSets = "0.3, 0.4, 0.5, 0.6, 0.7, 0.8"
